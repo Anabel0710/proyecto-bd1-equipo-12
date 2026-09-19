@@ -98,7 +98,7 @@ proyecto-bd1-equipo-12/
 
 ### Etapa 2
 
-* [DER en notación Peter Chen](docs/etapa-02/der/joyeria-der.png)
+* [DER en notación Peter Chen](docs/etapa-02/der/joyeria-der.png.png)
 * [Modelo relacional](docs/etapa-02/modelo-relacional.md)
 * [Proceso de normalización](docs/etapa-02/normalizacion.md)
 
