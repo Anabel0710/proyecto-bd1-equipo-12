@@ -1,0 +1,78 @@
+Contribución individual -- Etapa 02
+
+Equipo: 12
+Integrante: Delgado María Florencia
+DNI: 43210472
+Fecha: 2026-09-23
+
+1. Aporte realizado
+
+Durante esta etapa me encargué de elaborar la primera versión de la documentación correspondiente al proceso de normalización de la base de datos del Sistema de Gestión Comercial.
+
+Mi tarea consistió en explicar la evolución del modelo desde una estructura inicial con información repetida hasta alcanzar la Tercera Forma Normal. Para ello, desarrollé los apartados correspondientes a la Primera Forma Normal, Segunda Forma Normal y Tercera Forma Normal.
+
+En la 1FN expliqué la eliminación de los grupos repetitivos producidos por los múltiples productos que puede contener una orden. En la 2FN analicé las dependencias funcionales de DETALLE_ORDEN respecto de su clave primaria compuesta. En la 3FN documenté la separación de los datos de roles, categorías, géneros y métodos de pago para eliminar dependencias transitivas.
+
+Posteriormente, durante una reunión grupal mediante Google Meet, compartí esta primera versión con los demás integrantes. Participé en la revisión de la normalización, aporté ideas para mejorar las explicaciones y colaboré en la corrección de su correspondencia con el DER y el modelo relacional.
+
+2. Decisiones en las que participé
+
+Participé en las siguientes decisiones:
+
+- Presentar una estructura inicial no normalizada para mostrar los problemas de redundancia y repetición.
+- Separar los datos generales de una orden de los productos incluidos en ella.
+- Utilizar DETALLE_ORDEN para representar los diferentes productos que forman parte de una orden.
+- Analizar por separado cada forma normal para mostrar la evolución del modelo.
+- Considerar la combinación de id_orden e id_producto al estudiar las dependencias funcionales de DETALLE_ORDEN.
+- Mantener en PRODUCTO solamente los datos que dependen directamente de id_producto.
+- Mantener en ORDEN los datos que dependen directamente de id_orden.
+- Separar ROL, CATEGORIA, GENERO y METODO_PAGO en relaciones independientes.
+- No almacenar subtotal y total como datos independientes, debido a que pueden obtenerse mediante cálculos.
+- Mantener el precio unitario histórico en DETALLE_ORDEN para evitar que las modificaciones del catálogo alteren ventas anteriores.
+
+Además, participé en la discusión grupal sobre los nombres de las relaciones, la ubicación de las claves y la coherencia entre los distintos documentos de la Etapa 2.
+
+3. Problemas o dificultades identificadas
+
+Una de las principales dificultades fue explicar la normalización como un proceso gradual y no solamente presentar el modelo final ya normalizado.
+
+También fue necesario identificar correctamente las dependencias funcionales de DETALLE_ORDEN, debido a que utiliza una clave primaria compuesta. Debíamos justificar que cantidad y precio_unitario dependen de la combinación de la orden y el producto.
+
+Otra dificultad fue diferenciar las dependencias parciales de las dependencias transitivas y relacionar cada una con la forma normal correspondiente.
+
+Además, durante la revisión encontramos que algunos nombres de atributos y relaciones debían mantenerse iguales en el DER, el modelo relacional y la documentación de normalización para evitar contradicciones.
+
+4. Soluciones o propuestas realizadas
+
+Para explicar mejor el proceso, propuse comenzar con una estructura general de venta que reuniera datos de la orden, del cliente y de varios productos. A partir de esa situación inicial, describí los problemas que se resolvían en cada forma normal.
+
+En la explicación de la 1FN mostré la separación entre ORDEN y DETALLE_ORDEN para eliminar los grupos repetitivos. En la 2FN detallé qué atributos dependían de la clave completa de DETALLE_ORDEN y cuáles debían permanecer en PRODUCTO u ORDEN.
+
+En la 3FN expliqué las dependencias transitivas que justificaban la creación de las tablas ROL, CATEGORIA, GENERO y METODO_PAGO.
+
+Durante la reunión grupal comparé la documentación con el modelo relacional y participé en la corrección de nombres, claves y referencias. También colaboré en la revisión de los valores calculables para evitar que subtotal y total produjeran redundancia o inconsistencias.
+
+5. Evidencias en el repositorio
+
+El archivo principal relacionado con mi aporte es:
+
+- "docs/etapa-02/normalizacion.md"
+
+También utilicé para la revisión y comprobación:
+
+- "docs/etapa-02/modelo-relacional.md"
+- "docs/etapa-02/der/joyeria-der.png"
+
+Commit relacionado con la incorporación del documento:
+
+- "b6c3788" — Agrega la versión inicial del modelo relacional y la normalización.
+
+La carga del archivo fue realizada desde la cuenta de la integrante encargada de organizar el repositorio. Mi aporte se encuentra reflejado en la elaboración de la primera versión de "normalizacion.md", en las explicaciones de 1FN, 2FN y 3FN, y en su posterior revisión y corrección grupal.
+
+6. Reflexión individual
+
+Durante esta etapa comprendí que normalizar una base de datos no consiste solamente en dividir información en distintas tablas, sino en analizar las dependencias existentes entre los atributos.
+
+Aprendí a reconocer grupos repetitivos, dependencias parciales y dependencias transitivas, y a relacionar cada problema con la forma normal correspondiente.
+
+También comprendí la importancia de mantener coherencia entre el DER, el modelo relacional y la documentación escrita. La reunión grupal me permitió revisar mis explicaciones, escuchar otras propuestas y mejorar la justificación del proceso utilizado para alcanzar la Tercera Forma Normal.
