@@ -1,0 +1,49 @@
+MANIFIESTO INDIVIDUAL DE APORTES — ETAPA 2
+
+1. APORTE REALIZADO
+Durante esta etapa trabajamos en equipo mediante llamadas por Google Meet para armar el diagrama conceptual (DER) en ERDPlus y pasar todo al modelo relacional con sus tablas. Analizamos juntas los requisitos del sistema y debatimos cómo representar cada parte.
+
+Por mi cuenta, me enfoqué especialmente en proponer y resolver dos partes importantes del sistema:
+- Métodos de pago (METODO_PAGO): Propuse que las formas de pago no queden como un simple texto dentro de la orden, sino que tengan su propia tabla separada y se vinculen a la orden con una clave foránea, cumpliendo con la Tercera Forma Normal.
+- Consultas y contacto (CONSULTA): Planteé cómo relacionar las consultas con los usuarios, pensando en una regla clave: que cualquier persona que visite la página pueda enviar una duda, tenga o no una cuenta creada.
+
+Además, ayudé a revisar y redactar el documento donde explicamos paso a paso cómo aplicamos la Primera, Segunda y Tercera Forma Normal.
+
+
+2. DECISIONES EN LAS QUE PARTICIPÉ
+Junto a mis compañeras, formé parte de las siguientes decisiones:
+- Separar la tabla METODO_PAGO: Acordamos no repetir nombres de formas de pago en cada compra y dejar una tabla específica para eso.
+- Permitir consultas de visitantes: Decidimos que en la tabla de consultas el campo del usuario no sea obligatorio, para que los visitantes sin cuenta también puedan escribir.
+- Armar la tabla DETALLE_ORDEN: Validamos que la relación entre compras y productos necesitaba una tabla intermedia con clave compuesta (id_orden e id_producto), guardando el precio que tenía el producto al momento exacto de la compra.
+- No guardar totales calculados: Acordamos no crear columnas fijas para subtotal ni total, ya que se pueden calcular multiplicando la cantidad por el precio de ese momento.
+
+
+3. PROBLEMAS O DIFICULTADES IDENTIFICADAS
+- Qué hacer con los mensajes de personas no registradas: Al principio dudábamos sobre cómo guardar una consulta si la persona no era un cliente registrado en el sistema. Si hacíamos obligatorio el usuario, nadie de afuera podía preguntar nada.
+- Dónde guardar los métodos de pago: Tuvimos que analizar si poner el nombre del pago directo en la orden causaba repetición de datos innecesaria.
+
+
+4. SOLUCIONES O PROPUESTAS REALIZADAS
+- Dejar el usuario opcional en las consultas: Propuse que la clave foránea del usuario en la tabla de consultas pueda quedar vacía (nula) si quien consulta no tiene cuenta, agregando campos para guardar su nombre y correo de contacto.
+- Crear una tabla propia para métodos de pago: Planteé crear la tabla METODO_PAGO con su propio código y nombre, conectándola a la orden mediante una clave foránea para dejar el modelo prolijo y normalizado en 3FN.
+- Revisión en equipo: En las reuniones revisamos juntas tabla por tabla para verificar que ningún dato estuviera repetido y que todas las tablas intermedias estuvieran bien armadas.
+
+
+5. EVIDENCIAS EN EL REPOSITORIO
+
+Archivos en los que trabajé junto al equipo:
+- "docs/etapa-02/der/joyeria-der.erdplus" (Archivo editable del diagrama conceptual)
+- "docs/etapa-02/der/joyeria-der.png" (Imagen del diagrama)
+- "docs/etapa-02/modelo-relacional.md" (Listado de tablas con sus claves primarias y foráneas)
+- "docs/etapa-02/normalizacion.md" (Explicación paso a paso de las formas normales)
+- "docs/etapa-02/manifiesto-individual/equipo12_etapa02_44976729.md"
+
+Sobre la autoría de los commits:
+Como acordamos trabajar en llamadas compartiendo pantalla, elegimos que una sola compañera se encargue de ordenar y subir los archivos finales al repositorio. Por eso los commits figuran desde la cuenta de Anabel0710:
+- b6c3788 — "Agrega la versión inicial del modelo relacional y la normalización": refleja el diseño de tablas y normalización que definimos en conjunto.
+- 4cb0c48 — "Agrega el modelo relacional en ERD y como imagen": contiene el esquema de tablas terminado con métodos de pago y consultas.
+- 3a4695c — "Agrega el DER en notación Peter Chen": sube el diagrama inicial que construimos y corregimos en grupo.
+
+
+6. REFLEXIÓN INDIVIDUAL
+Esta etapa me ayudó a entender en la práctica cómo se pasa de una idea dibujada en un papel o diagrama a una estructura real de tablas organizadas. Aprendí que pensar bien las reglas desde el principio —como permitir que un visitante deje una consulta sin obligarlo a crearse una cuenta, o separar los medios de pago para no repetir información— hace que el sistema sea más ordenado y fácil de usar en el futuro. Trabajar debatiendo en grupo me sirvió mucho para fundamentar mis ideas y llegar a acuerdos comunes.
