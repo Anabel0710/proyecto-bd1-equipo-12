@@ -1,84 +1,83 @@
--- =====================================================
--- Equipo 12
--- Sistema de Gestión Comercial y Control de Inventario
--- para Joyería
--- Etapa III - Implementación física
--- Módulo: roles, usuarios y consultas
--- Responsable: Gonzalez Rocío Anabel
--- Motor: Microsoft SQL Server
--- =====================================================
+USE BD_Joyeria_Practica;
+GO
 
--- La tabla ROL se crea primero porque USUARIO
--- necesita referenciarla mediante una clave foránea.
+/* =========================================================
+   TABLA: Rol
+   Almacena los roles que pueden asignarse a los usuarios.
+   ========================================================= */
 
-CREATE TABLE dbo.ROL (
-    id_rol INT IDENTITY(1,1) NOT NULL,
-    nombre_rol NVARCHAR(50) NOT NULL,
+CREATE TABLE Rol (
+    IdRol INT IDENTITY(1,1) NOT NULL,
+    NombreRol VARCHAR(50) NOT NULL,
 
-    CONSTRAINT PK_ROL
-        PRIMARY KEY (id_rol),
+    CONSTRAINT PK_IdRol
+        PRIMARY KEY (IdRol),
 
-    CONSTRAINT UK_ROL_nombre
-        UNIQUE (nombre_rol)
+    CONSTRAINT UQ_NombreRol
+        UNIQUE (NombreRol)
 );
 GO
 
--- Cada usuario posee obligatoriamente un rol.
--- El email es obligatorio y no puede repetirse.
 
-CREATE TABLE dbo.USUARIO (
-    id_usuario INT IDENTITY(1,1) NOT NULL,
-    nombre NVARCHAR(60) NOT NULL,
-    apellido NVARCHAR(60) NOT NULL,
-    email NVARCHAR(120) NOT NULL,
-    contrasenia NVARCHAR(255) NOT NULL,
-    id_rol INT NOT NULL,
+/* =========================================================
+   TABLA: Usuario
+   Almacena los usuarios registrados en el sistema.
+   ========================================================= */
 
-    CONSTRAINT PK_USUARIO
-        PRIMARY KEY (id_usuario),
+CREATE TABLE Usuario (
+    IdUsuario INT IDENTITY(1,1) NOT NULL,
+    Nombre VARCHAR(60) NOT NULL,
+    Apellido VARCHAR(60) NOT NULL,
+    Email VARCHAR(120) NOT NULL,
+    Contrasenia VARCHAR(255) NOT NULL,
+    IdRol INT NOT NULL,
 
-    CONSTRAINT UK_USUARIO_email
-        UNIQUE (email),
+    CONSTRAINT PK_IdUsuario
+        PRIMARY KEY (IdUsuario),
 
-    CONSTRAINT FK_USUARIO_ROL
-        FOREIGN KEY (id_rol)
-        REFERENCES dbo.ROL (id_rol)
+    CONSTRAINT UQ_EmailUsuario
+        UNIQUE (Email),
+
+    CONSTRAINT FK_Usuario_Rol
+        FOREIGN KEY (IdRol)
+        REFERENCES Rol (IdRol)
         ON UPDATE CASCADE
         ON DELETE NO ACTION
 );
 GO
 
--- La clave foránea id_usuario admite NULL porque
--- una consulta puede ser enviada por un visitante.
 
-CREATE TABLE dbo.CONSULTA (
-    id_consulta INT IDENTITY(1,1) NOT NULL,
-    nombre_remitente NVARCHAR(120) NOT NULL,
-    email_remitente NVARCHAR(120) NOT NULL,
-    fecha_hora DATETIME2 NOT NULL,
+/* =========================================================
+   TABLA: Consulta
+   Registra los mensajes enviados por usuarios o visitantes.
+   IdUsuario puede ser NULL cuando el remitente no está
+   registrado en el sistema.
+   ========================================================= */
 
-    estado NVARCHAR(20) NOT NULL
-        CONSTRAINT DF_CONSULTA_estado
-        DEFAULT N'Pendiente',
+CREATE TABLE Consulta (
+    IdConsulta INT IDENTITY(1,1) NOT NULL,
+    NombreRemitente VARCHAR(120) NOT NULL,
+    EmailRemitente VARCHAR(120) NOT NULL,
+    FechaHora DATETIME2 NOT NULL
+        CONSTRAINT DF_FechaHoraConsulta
+        DEFAULT SYSDATETIME(),
 
-    mensaje NVARCHAR(500) NOT NULL,
-    id_usuario INT NULL,
+    Estado VARCHAR(20) NOT NULL
+        CONSTRAINT DF_EstadoConsulta
+        DEFAULT 'Pendiente',
 
-    CONSTRAINT PK_CONSULTA
-        PRIMARY KEY (id_consulta),
+    Mensaje VARCHAR(1000) NOT NULL,
+    IdUsuario INT NULL,
 
-    CONSTRAINT CHK_CONSULTA_estado
-        CHECK (
-            estado IN (
-                N'Pendiente',
-                N'Respondida',
-                N'Cerrada'
-            )
-        ),
+    CONSTRAINT PK_IdConsulta
+        PRIMARY KEY (IdConsulta),
 
-    CONSTRAINT FK_CONSULTA_USUARIO
-        FOREIGN KEY (id_usuario)
-        REFERENCES dbo.USUARIO (id_usuario)
+    CONSTRAINT CK_EstadoConsulta
+        CHECK (Estado IN ('Pendiente', 'Leida', 'Respondida')),
+
+    CONSTRAINT FK_Consulta_Usuario
+        FOREIGN KEY (IdUsuario)
+        REFERENCES Usuario (IdUsuario)
         ON UPDATE CASCADE
         ON DELETE SET NULL
 );

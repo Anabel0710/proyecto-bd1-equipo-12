@@ -1,150 +1,169 @@
-
-
-INSERT INTO dbo.ROL (nombre_rol)
-VALUES
-(N'Administrador'),
-(N'Cliente'),
-(N'Vendedor'),
-(N'Supervisor'),
-(N'Cajero'),
-(N'Encargado de inventario'),
-(N'Atención al cliente'),
-(N'Auditor');
+USE BD_Joyeria_Practica;
 GO
 
--- 10 registros para USUARIO
+/* =========================================================
+   DATOS DE PRUEBA: Rol
+   Se cargan 8 registros.
+   ========================================================= */
 
-INSERT INTO dbo.USUARIO (
-    nombre,
-    apellido,
-    email,
-    contrasenia,
-    id_rol
-)
+INSERT INTO Rol (NombreRol)
 VALUES
-(N'Sofía', N'Benítez',
- N'sofia.benitez@example.com', N'ClavePrueba01', 2),
-
-(N'Martín', N'Ramírez',
- N'martin.ramirez@example.com', N'ClavePrueba02', 2),
-
-(N'Valentina', N'Gómez',
- N'valentina.gomez@example.com', N'ClavePrueba03', 2),
-
-(N'Nicolás', N'Fernández',
- N'nicolas.fernandez@example.com', N'ClavePrueba04', 3),
-
-(N'Camila', N'López',
- N'camila.lopez@example.com', N'ClavePrueba05', 1),
-
-(N'Joaquín', N'Acosta',
- N'joaquin.acosta@example.com', N'ClavePrueba06', 5),
-
-(N'Lucía', N'Medina',
- N'lucia.medina@example.com', N'ClavePrueba07', 6),
-
-(N'Mateo', N'Silva',
- N'mateo.silva@example.com', N'ClavePrueba08', 7),
-
-(N'Agustina', N'Torres',
- N'agustina.torres@example.com', N'ClavePrueba09', 4),
-
-(N'Thiago', N'Sosa',
- N'thiago.sosa@example.com', N'ClavePrueba10', 8);
+    ('Administrador'),
+    ('Cliente'),
+    ('Vendedor'),
+    ('Supervisor'),
+    ('Cajero'),
+    ('Encargado de inventario'),
+    ('Atencion al cliente'),
+    ('Auditor');
 GO
 
--- 10 registros para CONSULTA.
--- Algunas consultas pertenecen a usuarios registrados.
--- Otras tienen id_usuario NULL porque fueron realizadas
--- por visitantes.
 
-INSERT INTO dbo.CONSULTA (
-    nombre_remitente,
-    email_remitente,
-    fecha_hora,
-    estado,
-    mensaje,
-    id_usuario
-)
+/* =========================================================
+   DATOS DE PRUEBA: Usuario
+   Se cargan 10 registros.
+   ========================================================= */
+
+INSERT INTO Usuario
+    (Nombre, Apellido, Email, Contrasenia, IdRol)
 VALUES
-(
-    N'Sofía Benítez',
-    N'sofia.benitez@example.com',
-    '2026-09-20T10:15:00',
-    N'Pendiente',
-    N'Quisiera conocer las medidas disponibles de los anillos.',
-    1
-),
-(
-    N'Martín Ramírez',
-    N'martin.ramirez@example.com',
-    '2026-09-20T11:30:00',
-    N'Respondida',
-    N'¿Realizan envíos a otras provincias?',
-    2
-),
-(
-    N'Valentina Gómez',
-    N'valentina.gomez@example.com',
-    '2026-09-21T09:20:00',
-    N'Cerrada',
-    N'Necesito información sobre el cuidado de las joyas.',
-    3
-),
-(
-    N'Carolina Pérez',
-    N'carolina.perez@example.com',
-    '2026-09-21T12:45:00',
-    N'Pendiente',
-    N'¿Puedo comprar sin registrarme?',
-    NULL
-),
-(
-    N'Federico Molina',
-    N'federico.molina@example.com',
-    '2026-09-22T16:10:00',
-    N'Respondida',
-    N'Quisiera consultar si aceptan pagos en efectivo.',
-    NULL
-),
-(
-    N'Sofía Benítez',
-    N'sofia.benitez@example.com',
-    '2026-09-23T14:25:00',
-    N'Cerrada',
-    N'¿Cómo puedo conocer el estado de mi pedido?',
-    1
-),
-(
-    N'Laura Romero',
-    N'laura.romero@example.com',
-    '2026-09-24T18:00:00',
-    N'Pendiente',
-    N'¿Los collares incluyen garantía?',
-    NULL
-),
-(
-    N'Martín Ramírez',
-    N'martin.ramirez@example.com',
-    '2026-09-25T08:40:00',
-    N'Respondida',
-    N'Quisiera modificar mis datos personales.',
-    2
-),
-(
-    N'Daniela Ortiz',
-    N'daniela.ortiz@example.com',
-    '2026-09-26T15:35:00',
-    N'Pendiente',
-    N'¿Disponen de pulseras ajustables?',
-    NULL
-),
-(
-    N'Valentina Gómez',
-    N'valentina.gomez@example.com',
-    '2026-09-27T17:50:00',
-    N'Cerrada',
-    N'Necesito consultar los métodos de pago disponibles.',
-    3
-);
+    ('Sofia', 'Benitez',
+     'sofia.benitez@example.com', 'ClavePrueba01', 1),
+
+    ('Martin', 'Ramirez',
+     'martin.ramirez@example.com', 'ClavePrueba02', 2),
+
+    ('Valentina', 'Gomez',
+     'valentina.gomez@example.com', 'ClavePrueba03', 3),
+
+    ('Nicolas', 'Fernandez',
+     'nicolas.fernandez@example.com', 'ClavePrueba04', 4),
+
+    ('Camila', 'Lopez',
+     'camila.lopez@example.com', 'ClavePrueba05', 5),
+
+    ('Joaquin', 'Acosta',
+     'joaquin.acosta@example.com', 'ClavePrueba06', 5),
+
+    ('Lucia', 'Medina',
+     'lucia.medina@example.com', 'ClavePrueba07', 6),
+
+    ('Mateo', 'Silva',
+     'mateo.silva@example.com', 'ClavePrueba08', 7),
+
+    ('Agustina', 'Torres',
+     'agustina.torres@example.com', 'ClavePrueba09', 4),
+
+    ('Thiago', 'Sosa',
+     'thiago.sosa@example.com', 'ClavePrueba10', 8);
+GO
+
+
+/* =========================================================
+   DATOS DE PRUEBA: Consulta
+   Se cargan 10 registros.
+
+   Las consultas con IdUsuario NULL representan mensajes
+   enviados por visitantes no registrados.
+   ========================================================= */
+
+INSERT INTO Consulta
+    (
+        NombreRemitente,
+        EmailRemitente,
+        FechaHora,
+        Estado,
+        Mensaje,
+        IdUsuario
+    )
+VALUES
+    (
+        'Martin Ramirez',
+        'martin.ramirez@example.com',
+        '2026-09-20T10:15:00',
+        'Pendiente',
+        'Quisiera conocer la disponibilidad de anillos de oro.',
+        2
+    ),
+
+    (
+        'Valentina Gomez',
+        'valentina.gomez@example.com',
+        '2026-09-20T11:30:00',
+        'Respondida',
+        'Necesito información sobre los medios de pago disponibles.',
+        3
+    ),
+
+    (
+        'Carolina Perez',
+        'carolina.perez@example.com',
+        '2026-09-21T09:20:00',
+        'Pendiente',
+        'Quisiera consultar si realizan envíos a otras provincias.',
+        NULL
+    ),
+
+    (
+        'Nicolas Fernandez',
+        'nicolas.fernandez@example.com',
+        '2026-09-21T15:40:00',
+        'Leida',
+        '¿Cuál es el tiempo estimado de entrega de una compra?',
+        4
+    ),
+
+    (
+        'Camila Lopez',
+        'camila.lopez@example.com',
+        '2026-09-22T12:10:00',
+        'Respondida',
+        'Necesito cambiar el método de pago de mi pedido.',
+        5
+    ),
+
+    (
+        'Daniela Romero',
+        'daniela.romero@example.com',
+        '2026-09-23T08:45:00',
+        'Pendiente',
+        'Quisiera saber si tienen collares de plata disponibles.',
+        NULL
+    ),
+
+    (
+        'Joaquin Acosta',
+        'joaquin.acosta@example.com',
+        '2026-09-23T16:25:00',
+        'Leida',
+        'Solicito información sobre el estado de mi pedido.',
+        6
+    ),
+
+    (
+        'Lucia Medina',
+        'lucia.medina@example.com',
+        '2026-09-24T10:50:00',
+        'Respondida',
+        '¿Se puede reservar una joya antes de realizar el pago?',
+        7
+    ),
+
+    (
+        'Pablo Martinez',
+        'pablo.martinez@example.com',
+        '2026-09-24T14:15:00',
+        'Pendiente',
+        'Quisiera consultar si realizan grabados personalizados.',
+        NULL
+    ),
+
+    (
+        'Mateo Silva',
+        'mateo.silva@example.com',
+        '2026-09-25T17:35:00',
+        'Pendiente',
+        'Necesito información sobre la garantía de los productos.',
+        8
+    );
 GO
