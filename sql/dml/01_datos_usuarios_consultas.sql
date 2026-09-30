@@ -1,12 +1,4 @@
--- =====================================================
--- Equipo 12
--- Etapa III - Datos de prueba
--- Módulo: roles, usuarios y consultas
--- Responsable: Gonzalez Rocío Anabel
--- Motor: Microsoft SQL Server
--- =====================================================
 
--- 8 registros para ROL
 
 INSERT INTO dbo.ROL (nombre_rol)
 VALUES
