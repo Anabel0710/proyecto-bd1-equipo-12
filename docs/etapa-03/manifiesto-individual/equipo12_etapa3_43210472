@@ -1,0 +1,86 @@
+Contribución individual — Etapa 03
+Equipo: 12
+
+Integrante: Delgado María Florencia
+
+DNI: 43210472
+
+Fecha: 2026-09-30
+
+1. Aporte realizado
+Durante esta etapa participe en la creación de la base de datos para el sistema de joyería en Microsoft SQL Server.
+
+Mi tarea principal fue crear y cargar las tablas de Compra y DetalleCompra.
+
+En la parte de estructura (DDL), definí las dos tablas, sus columnas, los identificadores principales, las conexiones con otras tablas y las reglas para que no se guarden datos inválidos.
+
+En la parte de datos (DML), cargue ejemplos reales de compras con varios productos en cada una, para probar que todo funcione bien y que los cálculos tengan sentido.
+
+También me coordine con mis compañeros para que sus tablas estuvieran listas antes de cargar las mías, y ayude a subir los archivos de esta etapa al repositorio del equipo.
+
+2. Decisiones en las que participe
+Participe en las siguientes decisiones sobre las tablas que me tocaron:
+
+Separar la compra en dos partes: una tabla general para los datos del comprobante (Compra) y otra para el listado de productos comprados (DetalleCompra).
+
+Usar numeración automática para que cada compra tenga su propio código identificador sin repetir.
+
+Conectar la compra con el proveedor que vende y con el usuario del sistema que la registra.
+
+Conectar cada fila del detalle con la compra correspondiente y con el producto adquirido.
+
+Evitar que se puedan borrar proveedores o productos si ya están anotados en una compra.
+
+Usar campos con decimales exactos para los precios, subtotales y totales, evitando errores al sumar centavos.
+
+Obligar a que las cantidades y los precios sean siempre mayores a cero.
+
+Hacer que la fecha de la compra se cargue automáticamente con el día y la hora del momento si no se ingresa a mano.
+
+Escribir todos los nombres de columnas y tablas de forma prolija, sin espacios ni caracteres raros.
+
+3. Problemas o dificultades identificadas
+Mis tablas dependían de las demás: no podía probar compras sin tener antes cargados los proveedores, los usuarios y los productos.
+
+Coincidencia en los cálculos: había que asegurarse de que la suma de los productos del detalle coincidiera exactamente con el total guardado en la compra.
+
+Diferencias de formatos con mis compañeros: al principio algunos usaron nombres distintos para las columnas o tipos de datos que no encajaban del todo con los mios.
+
+Orden de ejecución: si corríamos los archivos en cualquier orden, el sistema daba error porque buscaba tablas que todavía no existían.
+
+4. Soluciones o propuestas realizadas
+Acorde con el grupo un orden para correr los archivos, numerándolos para cargar primero las tablas base y después las compras.
+
+Ajuste mis tablas para que los códigos de producto y proveedor usaran exactamente el mismo tipo de dato que definieron mis compañeros.
+
+Puse reglas para que la base de datos rechace sola cualquier intento de guardar cantidades negativas o precios en cero.
+
+Hice consultas de prueba combinando compras, detalles y productos para verificar que las cuentas dieran bien y que no faltara información.
+
+Deje registrados los avances y correcciones paso a paso en el repositorio mediante mensajes claros en cada subida de cambios.
+
+5. Evidencias en el repositorio
+Archivos relacionados con mi aporte:
+
+sql/ddl/03_compras_detallecompras.sql
+
+sql/dml/03_datos_compras_detallecompras.sql
+
+docs/etapa-03/compras-detallecompras.md
+
+docs/etapa-03/manifiesto-individual/equipo12_etapa3_42203424.md
+
+Commits relacionados:
+
+— Creación de las tablas Compra y DetalleCompra con sus reglas.
+
+— Carga de los datos de prueba y verificación de las relaciones.
+
+— Contribución Individual
+
+6. Reflexión individual
+En esta etapa aprendí como pasar el diseño de una base de datos a la practica en SQL Server, armando un circuito de compras real donde una cabecera se conecta con muchos productos.
+
+También entendí lo importante que es el orden de trabajo: no se puede registrar una compra si antes no existen el proveedor y el producto en el sistema.
+
+Por ultimo, la experiencia me enseno que trabajar en equipo exige mucha comunicación para que todos usemos los mismos criterios, evitemos errores de compatibilidad y podamos juntar las partes sin problemas.
