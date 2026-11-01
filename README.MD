@@ -108,9 +108,9 @@ proyecto-bd1-equipo-12/
 * [x] DER en notación Peter Chen.
 * [x] Primera versión del modelo relacional.
 * [x] Primera versión del proceso de normalización.
-* [ ] Revisión final de la Etapa 2.
-* [ ] Etapa 3 – Implementación.
-* [ ] Etapa 4 – Consultas.
+* [x] Revisión final de la Etapa 2.
+* [x] Etapa 3 – Implementación.
+* [x] Etapa 4 – Consultas.
 * [ ] Etapa 5 – Temas técnicos.
 
 ## Herramientas utilizadas
