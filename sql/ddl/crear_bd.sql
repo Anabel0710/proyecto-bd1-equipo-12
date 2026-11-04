@@ -196,3 +196,152 @@ CREATE TABLE DetalleCompra (
   --  CONSTRAINT FK_DetalleCompra_Producto FOREIGN KEY (CodigoProducto) REFERENCES Producto(CodigoProducto)
 );
 GO
+
+/* =========================================================
+   TABLAS ADICIONALES (DE Tablas.sql)
+   ========================================================= */
+
+-- 1.7 Condición frente al IVA
+CREATE TABLE CondicionIVA (
+    idCondicionIVA INT IDENTITY(1,1),
+    CondicionIVA VARCHAR(50) NOT NULL,
+    CONSTRAINT pk_condicioniva PRIMARY KEY (idCondicionIVA),
+    CONSTRAINT uq_condicioniva UNIQUE (CondicionIVA)
+);
+GO
+
+-- 1.8 Tipo de Comprobante
+CREATE TABLE TipoComprobante (
+    idTipoComprobante INT IDENTITY(1,1),
+    TipoComprobante VARCHAR(50) NOT NULL,
+    CONSTRAINT pk_tipocomprobante PRIMARY KEY (idTipoComprobante),
+    CONSTRAINT uq_tipocomprobante UNIQUE (TipoComprobante)
+);
+GO
+
+-- 2.2 Cliente
+CREATE TABLE Cliente (
+    idCliente INT IDENTITY(1,1),
+    Nombre VARCHAR(50) NOT NULL,
+    Apellido VARCHAR(50) NOT NULL,
+    DNI_CUIT VARCHAR(20) NOT NULL,
+    Telefono VARCHAR(20) NULL,
+    CorreoElectronico VARCHAR(100) NULL,
+    idCondicionIVA INT NOT NULL,
+    CONSTRAINT pk_cliente PRIMARY KEY (idCliente),
+    CONSTRAINT uq_cliente_documento UNIQUE (DNI_CUIT),
+    CONSTRAINT ck_cliente_email CHECK (CorreoElectronico LIKE '%@%.%' OR CorreoElectronico IS NULL),
+    CONSTRAINT fk_cliente_condicioniva FOREIGN KEY (idCondicionIVA) 
+        REFERENCES CondicionIVA(idCondicionIVA) 
+        ON UPDATE NO ACTION 
+        ON DELETE NO ACTION
+);
+GO
+
+-- 2.4 Ajuste de Stock
+CREATE TABLE AjusteStock (
+    idAjuste INT IDENTITY(1,1),
+    FechaAjuste DATETIME NOT NULL DEFAULT GETDATE(),
+    TipoAjuste VARCHAR(30) NOT NULL,
+    CantidadAjuste INT NOT NULL,
+    Observacion VARCHAR(250) NULL,
+    idUsuario INT NOT NULL,
+    CodigoProducto INT NOT NULL,
+    CONSTRAINT pk_ajustestock PRIMARY KEY (idAjuste),
+    CONSTRAINT ck_ajustestock_cantidad CHECK (CantidadAjuste <> 0),
+    CONSTRAINT fk_ajustestock_usuario FOREIGN KEY (idUsuario) 
+        REFERENCES Usuario(idUsuario) 
+        ON UPDATE NO ACTION 
+        ON DELETE NO ACTION,
+    CONSTRAINT fk_ajustestock_producto FOREIGN KEY (CodigoProducto) 
+        REFERENCES Producto(CodigoProducto) 
+        ON UPDATE NO ACTION 
+        ON DELETE NO ACTION
+);
+GO
+
+-- 3.3 Cabecera de Recepción
+CREATE TABLE Recepcion (
+    idRecepcion INT IDENTITY(1,1),
+    FechaRecepcion DATETIME NOT NULL DEFAULT GETDATE(),
+    idCompra INT NOT NULL,
+    idUsuario INT NOT NULL,
+    CONSTRAINT pk_recepcion PRIMARY KEY (idRecepcion),
+    CONSTRAINT fk_recepcion_compra FOREIGN KEY (idCompra) 
+        REFERENCES Compra(idCompra) 
+        ON UPDATE NO ACTION 
+        ON DELETE NO ACTION,
+    CONSTRAINT fk_recepcion_usuario FOREIGN KEY (idUsuario) 
+        REFERENCES Usuario(idUsuario) 
+        ON UPDATE NO ACTION 
+        ON DELETE NO ACTION
+);
+GO
+
+-- 3.4 Detalle de Recepción
+CREATE TABLE DetalleRecepcion (
+    idDetalleRecepcion INT IDENTITY(1,1),
+    CantidadRecibida INT NOT NULL,
+    idRecepcion INT NOT NULL,
+    idDetalleCompra INT NOT NULL,
+    CONSTRAINT pk_detallerecepcion PRIMARY KEY (idDetalleRecepcion),
+    CONSTRAINT ck_detallerecepcion_cantidad CHECK (CantidadRecibida >= 0),
+    CONSTRAINT fk_detallerecepcion_recepcion FOREIGN KEY (idRecepcion) 
+        REFERENCES Recepcion(idRecepcion) 
+        ON UPDATE NO ACTION 
+        ON DELETE NO ACTION,
+    CONSTRAINT fk_detallerecepcion_detallecompra FOREIGN KEY (idDetalleCompra) 
+        REFERENCES DetalleCompra(idDetalleCompra) 
+        ON UPDATE NO ACTION 
+        ON DELETE NO ACTION
+);
+GO
+
+-- 4.1 Cabecera de Comprobante (Venta)
+CREATE TABLE Comprobante (
+    idComprobante INT IDENTITY(1,1),
+    FechaComprobante DATETIME NOT NULL DEFAULT GETDATE(),
+    idMedioPago INT NOT NULL,
+    idTipoComprobante INT NOT NULL,
+    idCliente INT NOT NULL,
+    idUsuario INT NOT NULL,
+    CONSTRAINT pk_comprobante PRIMARY KEY (idComprobante),
+    CONSTRAINT fk_comprobante_mediopago FOREIGN KEY (idMedioPago) 
+        REFERENCES MedioPago(idMedioPago) 
+        ON UPDATE NO ACTION 
+        ON DELETE NO ACTION,
+    CONSTRAINT fk_comprobante_tipocomprobante FOREIGN KEY (idTipoComprobante) 
+        REFERENCES TipoComprobante(idTipoComprobante) 
+        ON UPDATE NO ACTION 
+        ON DELETE NO ACTION,
+    CONSTRAINT fk_comprobante_cliente FOREIGN KEY (idCliente) 
+        REFERENCES Cliente(idCliente) 
+        ON UPDATE NO ACTION 
+        ON DELETE NO ACTION,
+    CONSTRAINT fk_comprobante_usuario FOREIGN KEY (idUsuario) 
+        REFERENCES Usuario(idUsuario) 
+        ON UPDATE NO ACTION 
+        ON DELETE NO ACTION
+);
+GO
+
+-- 4.2 Detalle de Comprobante (Renglones de Venta)
+CREATE TABLE DetalleComprobante (
+    idDetalleComprobante INT IDENTITY(1,1),
+    idComprobante INT NOT NULL,
+    Cantidad INT NOT NULL,
+    PrecioUnitario DECIMAL(10,2) NOT NULL,
+    CodigoProducto INT NOT NULL,
+    CONSTRAINT pk_detallecomprobante PRIMARY KEY (idDetalleComprobante),
+    CONSTRAINT ck_detallecomprobante_cantidad CHECK (Cantidad > 0),
+    CONSTRAINT ck_detallecomprobante_precio CHECK (PrecioUnitario >= 0),
+    CONSTRAINT fk_detallecomprobante_comprobante FOREIGN KEY (idComprobante) 
+        REFERENCES Comprobante(idComprobante) 
+        ON UPDATE NO ACTION 
+        ON DELETE NO ACTION,
+    CONSTRAINT fk_detallecomprobante_producto FOREIGN KEY (CodigoProducto) 
+        REFERENCES Producto(CodigoProducto) 
+        ON UPDATE NO ACTION 
+        ON DELETE NO ACTION
+);
+GO
