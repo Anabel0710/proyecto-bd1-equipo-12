@@ -1,20 +1,3 @@
-## =====SEGURIDAD: Manejo de permisos a nivel de usuarios y roles.=====
-
--La seguridad en una base de datos permite controlar que usuarios pueden acceder a la información y qué operaciones pueden realizar. SQL Server permite administrar permisos de manera individual(usuarios) o agrupándolos mediante roles. Esto facilita proteger la información. 
-
--Principio de Mínimo privilegio: es un principio de seguridad que establece que a cada usuario o proceso se le deben otorgar únicamente los permisos estrictamente necesarios para cumplir con sus funciones. 
-
-## -Logins vs. Usuarios: 
-    LOGIN: autenticación a nivel de servidor o instancia de SQL Server. 
-    USUARIO (Data Base User): identidad y autorización mapeada a un Login dentro de una base de datos especifica. 
-
-## Roles: agrupaciones de usuarios para facilitar la administración centralizada de permisos.
-
-## ABSTRACCION MEDIANTE PROCEDIMIENTOS
-
-La combinación de permisos a nivel de procedimiento almacenado permite implementar un esquema seguro: un usuario de nivel operativo (como un vendedor) no tiene permisos directos para hacer INSERT o UPDATE en las tablas, pero si tiene permiso EXECUTE sobre un procedimiento que realiza la operación bajo reglas estrictamente controladas.  
-
-
 ## =====OPTIMIZACIÓN DE CONSULTAS A TRAVÉS DE INDICES=====
 
 Este proceso se basa en la optimización de costos, donde el motor evalúa múltiples planes equivalentes y selecciona el que consume la menor cantidad de recursos. El proceso de procesamiento de consultas sigue la secuencia: Parsing y Traducción, Optimización, Ejecución. 
@@ -42,4 +25,4 @@ Para medir el impacto de un índice se analizan las siguientes métricas:
 **Reducen los tiempos de respuesta en tablas con grandes volúmenes de datos.
 **Disminuyen la cantidad de lecturas que realiza el motor de base de datos.
 **Permiten optimizar filtros por fechas, códigos, clientes, productos, entre otros. 
-**Facilitan la escalabilidad de sistemas con grandes cantidades de información. 
+**Facilitan la escalabilidad de sistemas con grandes cantidades de información.
