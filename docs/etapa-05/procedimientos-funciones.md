@@ -1,37 +1,54 @@
-Etapa V: Procedimientos y Funciones Almacenadas
-1. ¿Qué son y para qué se utilizan?
-Procedimientos Almacenados (STORED PROCEDURE)
+# Etapa V: Procedimientos y Funciones Almacenadas
+
+## 1. ¿Qué son y para qué se utilizan?
+
+### Procedimientos Almacenados (`STORED PROCEDURE`)
 Son bloques estructurados de código T-SQL que se guardan y compilan directamente en el motor de la base de datos. Se utilizan principalmente para resolver la lógica operativa del negocio (operaciones como `INSERT`, `UPDATE` o `DELETE`), permitiendo realizar transacciones completas en un solo paso (por ejemplo, registrar una venta y descontar stock automáticamente).
-Funciones Definidas por el Usuario (UDF)
+
+### Funciones Definidas por el Usuario (`UDF`)
 Son rutinas programables que reciben parámetros de entrada, realizan un cálculo o procesamiento interno y retornan obligatoriamente un resultado:
-Funciones escalares: devuelven un único dato concreto (`DECIMAL`, `INT`, etc.). Son ideales para cálculos repetitivos, como determinar un descuento o un recargo.
-Funciones con valores de tabla: devuelven un conjunto de filas con estructura de tabla. Sirven para encapsular consultas y utilizarlas de forma directa dentro de sentencias `SELECT`, uniones `JOIN` o cláusulas `WHERE`.
+* **Funciones escalares:** devuelven un único dato concreto (`DECIMAL`, `INT`, etc.). Son ideales para cálculos repetitivos, como determinar un descuento o un recargo.
+* **Funciones con valores de tabla:** devuelven un conjunto de filas con estructura de tabla. Sirven para encapsular consultas y utilizarlas de forma directa dentro de sentencias `SELECT`, uniones `JOIN` o cláusulas `WHERE`.
+
 ---
-2. Ventajas de su aplicación en el sistema de la joyería
-Rendimiento optimizado: SQL Server compila el procedimiento o función la primera vez que se ejecuta y guarda el plan en memoria caché. Esto hace que las siguientes ejecuciones sean más rápidas, reduciendo el tráfico de red y el consumo de CPU.
-Seguridad y abstracción: Permite aislar el acceso directo a las tablas sensibles del local (`Comprobante`, `Producto`, `Compra`, `Usuario`). A los usuarios se les puede dar únicamente permiso de ejecución (`EXECUTE`) sobre las rutinas sin exponer la estructura de las tablas.
-Mantenibilidad y reutilización: Las reglas del negocio quedan centralizadas en la base de datos. Si el día de mañana cambia el porcentaje de descuento a clientes o la forma de restar stock, solo se ajusta la rutina en el servidor sin tener que reescribir la aplicación externa.
+
+## 2. Ventajas de su aplicación en el sistema de la joyería
+
+* **Rendimiento optimizado:** SQL Server compila el procedimiento o función la primera vez que se ejecuta y guarda el plan en memoria caché. Esto hace que las siguientes ejecuciones sean más rápidas, reduciendo el tráfico de red y el consumo de CPU.
+* **Seguridad y abstracción:** Permite aislar el acceso directo a las tablas sensibles del local (`Comprobante`, `Producto`, `Compra`, `Usuario`). A los usuarios se les puede dar únicamente permiso de ejecución (`EXECUTE`) sobre las rutinas sin exponer la estructura de las tablas.
+* **Mantenibilidad y reutilización:** Las reglas del negocio quedan centralizadas en la base de datos. Si el día de mañana cambia el porcentaje de descuento a clientes o la forma de restar stock, solo se ajusta la rutina en el servidor sin tener que reescribir la aplicación externa.
+
 ---
-3. Implementación en SQL Server Express
-Se crean mediante las sentencias de DDL `CREATE PROCEDURE` (o `CREATE PROC`) y `CREATE FUNCTION`.
-Las funciones escalares se definen con `RETURNS <tipo_dato>` y utilizan un cuerpo delimitado por `BEGIN ... END`.
-Las funciones de tabla en línea usan `RETURNS TABLE` y retornan directamente el resultado de una consulta `SELECT`.
-Los procedimientos almacenados reciben parámetros de entrada y pueden incluir parámetros de salida (`OUTPUT`) para devolver identificadores generados (como el ID del nuevo comprobante) al proceso que los llamó.
+
+## 3. Implementación en SQL Server Express
+
+* Se crean mediante las sentencias de DDL `CREATE PROCEDURE` (o `CREATE PROC`) y `CREATE FUNCTION`.
+* Las funciones escalares se definen con `RETURNS <tipo_dato>` y utilizan un cuerpo delimitado por `BEGIN ... END`.
+* Las funciones de tabla en línea usan `RETURNS TABLE` y retornan directamente el resultado de una consulta `SELECT`.
+* Los procedimientos almacenados reciben parámetros de entrada y pueden incluir parámetros de salida (`OUTPUT`) para devolver identificadores generados (como el ID del nuevo comprobante) al proceso que los llamó.
+
 ---
-4. Componentes implementados para Joyería Alba
+
+## 4. Componentes implementados para Joyería Alba
+
 Para dar respuesta a los requerimientos del local se diseñaron tres rutinas específicas:
-Función Escalar (`dbo.fn_CalcularDescuentoCliente`): Recibe el identificador del cliente (`idCliente`), suma el total histórico gastado en sus compras y determina un porcentaje de descuento por fidelidad (0%, 5% o 10%).
-Función de Tabla (`dbo.fn_ObtenerProductosPorCategoria`): Recibe el código de una categoría (`idCategoria`) y devuelve el listado completo de joyas y relojes disponibles en inventario de ese rubro, combinando sus categorías y géneros.
-Procedimiento Almacenado (`dbo.sp_RegistrarVentaCompleta`): Centraliza el circuito completo de una venta en el local:
-Valida la existencia del artículo y que cuente con stock suficiente.
-Invoca a la función de descuento para determinar el precio final.
-Inserta la cabecera en `Comprobante`.
-Inserta el renglón correspondiente en `DetalleComprobante`.
-Descuenta las piezas del campo `StockActual` en la tabla `Producto`.
-Devuelve mediante el parámetro `OUTPUT` el número de comprobante emitido.
+
+* **Función Escalar (`dbo.fn_CalcularDescuentoCliente`):** Recibe el identificador del cliente (`idCliente`), suma el total histórico gastado en sus compras y determina un porcentaje de descuento por fidelidad (0%, 5% o 10%).
+* **Función de Tabla (`dbo.fn_ObtenerProductosPorCategoria`):** Recibe el código de una categoría (`idCategoria`) y devuelve el listado completo de joyas y relojes disponibles en inventario de ese rubro, combinando sus categorías y géneros.
+* **Procedimiento Almacenado (`dbo.sp_RegistrarVentaCompleta`):** Centraliza el circuito completo de una venta en el local:
+  1. Valida la existencia del artículo y que cuente con stock suficiente.
+  2. Invoca a la función de descuento para determinar el precio final.
+  3. Inserta la cabecera en `Comprobante`.
+  4. Inserta el renglón correspondiente en `DetalleComprobante`.
+  5. Descuenta las piezas del campo `StockActual` en la tabla `Producto`.
+  6. Devuelve mediante el parámetro `OUTPUT` el número de comprobante emitido.
+
 ---
-5. Scripts de Demostración y Resultados Obtenidos
-Código DDL y Lógica de las Rutinas
+
+## 5. Scripts de Demostración y Resultados Obtenidos
+
+### Código DDL y Lógica de las Rutinas
+
 ```sql
 USE BD_JoyeriaAlba;
 GO
@@ -165,10 +182,14 @@ BEGIN
 END;
 GO
 ```
+
 ---
-Demostración y Comprobación en SQL Server
-Prueba 1: Evaluación de la Función Escalar de Descuento
+
+### Demostración y Comprobación en SQL Server
+
+#### Prueba 1: Evaluación de la Función Escalar de Descuento
 Se evalúa la función para el cliente con identificador 1 (`Mariana Silva`), analizando su volumen de compra registrado en el sistema.
+
 ```sql
 SELECT 
     idCliente,
@@ -177,21 +198,31 @@ SELECT
 FROM Cliente
 WHERE idCliente = 1;
 ```
-Resultado obtenido:  
+
+**Resultado obtenido:**  
 La función se ejecuta correctamente y devuelve un porcentaje de descuento de `0.00` (0%), indicando que el cliente aún no alcanza el volumen de facturación necesario para aplicar los tramos de descuento de 5% o 10%.
+
 ![Resultado Función Escalar de Descuento](img/Procesamiento_funciones/prueba1.png)
+
 ---
-Prueba 2: Consulta mediante la Función de Tabla
+
+#### Prueba 2: Consulta mediante la Función de Tabla
 Se invoca la función pasando como parámetro el ID de categoría 1 (correspondiente a Anillos).
+
 ```sql
 SELECT * FROM dbo.fn_ObtenerProductosPorCategoria(1);
 ```
-Resultado obtenido:  
+
+**Resultado obtenido:**  
 La función opera como una vista parametrizada, retornando la joya disponible para esa categoría (Anillo Solitario Plata 925), indicando su precio de venta ($45.000), existencia en stock (13 unidades) y los nombres resueltos de su categoría y género sin necesidad de escribir los `JOIN` en la consulta principal.
+
 ![Resultado Función de Tabla por Categoría](img/Procesamiento_funciones/prueba2.png)
+
 ---
-Prueba 3: Ejecución del Procedimiento Almacenado de Venta
+
+#### Prueba 3: Ejecución del Procedimiento Almacenado de Venta
 Se realiza la llamada al procedimiento para registrar la venta de 1 unidad del producto 1 y se consulta el comprobante emitido a través de su parámetro de salida.
+
 ```sql
 DECLARE @NuevoComprobanteID INT;
 
@@ -216,11 +247,16 @@ FROM Comprobante c
 INNER JOIN DetalleComprobante dc ON c.idComprobante = dc.idComprobante
 WHERE c.idComprobante = @NuevoComprobanteID;
 ```
-Resultado obtenido:  
+
+**Resultado obtenido:**  
 El procedimiento valida el stock, aplica la lógica comercial y crea de forma atómica el comprobante número 11, enlazando su respectivo renglón de detalle con el importe correspondiente ($45.000) y actualizando el stock físico del anillo.
+
 ![Resultado Ejecución Procedimiento Almacenado](img/Procesamiento_funciones/prueba3.png)
+
 ---
-6. Conclusiones
-Automatización y consistencia operativa (`dbo.sp_RegistrarVentaCompleta`): La prueba confirmó que es posible encapsular en una sola llamada la validación de inventario, el cálculo de descuentos, el alta de la factura y la baja de existencias. Esto previene errores de stock y agiliza la comunicación entre la aplicación y el motor de base de datos.
-Modularidad en reglas de negocio (`dbo.fn_CalcularDescuentoCliente`): La función escalar permitió independizar la regla de beneficios por cliente de la lógica de facturación, facilitando que el porcentaje pueda ser consultado en cualquier listado o aplicado automáticamente durante la venta.
-Simplificación en consultas de catálogo (`dbo.fn_ObtenerProductosPorCategoria`): La función de tabla agiliza la visualización de piezas disponibles por rubro, evitando repetir combinaciones de tablas (`INNER JOIN`) en las consultas habituales del sistema de la joyería.
+
+## 6. Conclusiones
+
+* **Automatización y consistencia operativa (`dbo.sp_RegistrarVentaCompleta`):** La prueba confirmó que es posible encapsular en una sola llamada la validación de inventario, el cálculo de descuentos, el alta de la factura y la baja de existencias. Esto previene errores de stock y agiliza la comunicación entre la aplicación y el motor de base de datos.
+* **Modularidad en reglas de negocio (`dbo.fn_CalcularDescuentoCliente`):** La función escalar permitió independizar la regla de beneficios por cliente de la lógica de facturación, facilitando que el porcentaje pueda ser consultado en cualquier listado o aplicado automáticamente durante la venta.
+* **Simplificación en consultas de catálogo (`dbo.fn_ObtenerProductosPorCategoria`):** La función de tabla agiliza la visualización de piezas disponibles por rubro, evitando repetir combinaciones de tablas (`INNER JOIN`) en las consultas habituales del sistema de la joyería.
