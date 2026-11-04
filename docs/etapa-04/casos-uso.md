@@ -38,8 +38,7 @@ ORDER BY p.StockActual ASC;
 GO
 ```
 
-### 4. 
-**Resultado obtenido:**  
+### 4. Resultado obtenido
 La consulta devuelve un listado de los 4 productos con menor existencia física en el local (Cadena Singapur con 5 unidades, Collar de Perlas con 6, Alianza Tradicional con 8 y Reloj Cronógrafo con 10). Muestra de forma clara la categoría, el género correspondiente y calcula con exactitud las unidades necesarias para reponer y alcanzar un nivel de stock seguro, facilitando la toma de decisiones para compras.
 
 ---
@@ -76,9 +75,9 @@ ORDER BY a.FechaAjuste DESC;
 GO
 ```
 
-### 4. 
-**Resultado obtenido:**  
+### 4. Resultado obtenido
 Se obtiene una sábana de auditoría ordenada cronológicamente de manera descendente. Permite identificar al personal responsable de cada modificación manual (como Valeria Gómez, Lucía Fernández o Marcos Duarte), el artículo comprometido, la cantidad debitada o acreditada en el inventario y el motivo asentado (ej. rotura en exhibición, pérdida de engarce o conciliación física).
+
 ---
 
 ## Caso de Uso 3: Verificación de Cumplimiento de Entregas de Proveedores
@@ -116,6 +115,5 @@ ORDER BY c.idCompra ASC;
 GO
 ```
 
-### 4. 
-**Resultado obtenido:**  
+### 4. Resultado obtenido
 El listado cruza de forma integral las órdenes de compra con los comprobantes de recepción física en depósito. En las operaciones registradas se constata un cumplimiento del 100% por parte de los proveedores (como Metales Argentinos o Piedras & Gemas Norte), reflejando una diferencia de 0 unidades pendientes de entrega y registrando la fecha formal en la que ingresaron los lotes.
