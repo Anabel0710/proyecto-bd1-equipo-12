@@ -173,7 +173,7 @@ GO
 
 **Lo que pasó en la prueba:**  
 Tal como esperábamos, SQL Server saltó al bloque `CATCH` por la violación de clave foránea e hizo el `ROLLBACK`.  
-Al contar los comprobantes con `COUNT(*)`, la cantidad antes y después del fallo fue la misma (9 comprobantes). La cabecera que se había insertado en el primer paso se borró por completo y el stock siguió en 14 unidades, demostrando que no quedó nada guardado a medias.
+Al contar los comprobantes con `COUNT(*)`, la cantidad antes y después del fallo fue exactamente la misma (11 comprobantes). La cabecera que se había insertado en el primer paso se borró por completo y el stock siguió intacto en 12 unidades, demostrando que no quedó nada guardado a medias y que se mantuvo la consistencia.
 
 **Comprobantes y stock sin modificaciones tras el fallo:**  
 ![Comprobación de Consistencia](img/Transacciones/Prueba2_Fallo.p_Provocado.png)
