@@ -206,7 +206,7 @@ El usuario asignado al rol rol_lectura_catalogos pudo desplegar las primeras 5 f
 
 **Conclusión: Se demuestra la efectividad de administrar accesos agrupados mediante roles personalizados (rol_lectura_catalogos). Esto simplifica la gestión de seguridad del sistema, evitando tener que otorgar permisos individuales a cada usuario y garantizando que solo los perfiles asignados puedan visualizar la información sensible del negocio. 
 
-6. Conclusiones de las pruebas
+## 6. Conclusiones de las pruebas
 
 Comprobamos la protección de tablas sensibles: El motor bloqueó de forma efectiva los intentos de modificación directa por parte de usuarios con permisos restringidos, asegurando que nadie pueda alterar valores en las tablas clave sin autorización.
 
