@@ -127,7 +127,7 @@ VALUES ('Anillo Diamante Admin Directo', 500000.00, 300000.00, 2, 1, 'Inserto di
 REVERT;
 GO
 
-![Prueba_de_Verificacion_EXITOSO](img/Prueba_de_Verificacion_EXITOSO.png)
+![Verificación de permisos](docs/etapa-05/IMG/Seguridad/Prueba_de_Verificacion_EXITOSA.png)
 
 -- PRUEBA 1.2: INSERT directo con usuario_lector (FALLA POR DENEGACIÓN)
 EXECUTE AS USER = 'usuario_lector';
@@ -141,7 +141,8 @@ BEGIN CATCH
 END CATCH;
 REVERT;
 GO
-![Prueba de Verificaicón FALLA]img/P-de-V_Usuario_Lector_FALLA.png).
+
+![Prueba de usuario lector](docs/etapa-05/IMG/Seguridad/P-de-V_Usuario_Lector_FALLA.png)
 
 Lo que pasó en la prueba:
 
@@ -172,7 +173,9 @@ EXEC dbo.sp_InsertarProducto
 PRINT '>> ÉXITO: Inserción completada correctamente mediante el procedimiento almacenado.';
 REVERT;
 GO
-![Aplicando Inset para usuarioL](img/Usuario_Lector_EXITOSO.png)
+
+![Usuario lector exitoso](docs/etapa-05/IMG/Seguridad/Usuario_Lector_EXITOSO.png)
+
 ## Lo que pasó en la prueba: 
 Aunque usuario_lector no tiene permisos para hacer INSERT directo en la tabla Producto, la instrucción EXEC dbo.sp_InsertarProducto se ejecutó con éxito y devolvió el mensaje de confirmación. Esto demuestra que la seguridad permite delegar la carga de datos únicamente a través de la lógica controlada del procedimiento.
 
@@ -190,7 +193,7 @@ PRINT '>> ÉXITO: usuario_con_rol consultó el catálogo correctamente mediante 
 REVERT;
 GO
 
-![Verficacion de comportamiento Usuario con ROL](img/Verificaion_de_Comportamiento.png)
+![Verificación de comportamiento](docs/etapa-05/IMG/Seguridad/Verificacion_de_Comportamiento.png)
 
 -- PRUEBA 2.2: Consulta SELECT con usuario_sin_rol (FALLA POR DENEGACIÓN)
 EXECUTE AS USER = 'usuario_sin_rol';
@@ -204,8 +207,7 @@ BEGIN CATCH
 END CATCH;
 REVERT;
 GO
-
-![Acceso denegado usuario sin rol](img/Usuario_Sin_Rol.png)
+![Usuario sin rol](docs/etapa-05/IMG/Seguridad/Usuario_Sin_Rol_FALLA.png)
 
 ## Lo que pasó en la prueba:
 
