@@ -107,7 +107,7 @@ Resultado esperado:
 La modificación se realiza correctamente y el trigger registra automáticamente el precio anterior y el nuevo en la tabla AuditoriaProducto.
 
 Evidencia:
-
+![Prueba de actualizacion de precio de venta](img/triggers/actualizacion%20de%20precio.png)
 
 
 La ejecución muestra que se modificó una fila correctamente.
@@ -127,6 +127,7 @@ La actualización se realiza correctamente y el trigger registra el stock anteri
 
 Evidencia:
 
+![Prueba de actualizacion de stock](img/triggers/actualizacion%20de%20stock.png)
 
 
 La ejecución se completa sin errores, demostrando que la modificación fue realizada correctamente.
@@ -150,6 +151,7 @@ En el caso de las eliminaciones, los valores nuevos aparecen como NULL, ya que e
 
 Evidencia:
 
+![Resultado de la auditoria de productos](img/triggers/historial.png)
 
 
 La consulta permite comprobar que las operaciones quedaron registradas correctamente en la tabla auxiliar AuditoriaProducto.
@@ -174,6 +176,7 @@ Por lo tanto, el registro permanece protegido y no se permite su eliminación.
 
 Evidencia:
 
+![Prueba de actualizacion de precio de venta](img/triggers/intento-eliminar.png)
 
 
 La ejecución demuestra que el trigger de protección interviene automáticamente ante el intento de eliminar un registro.
