@@ -15,7 +15,7 @@ La gerencia necesita distinguir a aquellos vendedores que hayan superado un umbr
 ### 3. Código SQL
 
 ```sql
-USE BD_Joyeria_Practica;
+USE BD_JoyeriaAlba;
 GO
 
 SELECT 

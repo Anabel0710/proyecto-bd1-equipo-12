@@ -7,7 +7,7 @@ En una base de datos relacional, la seguridad por **permisos y roles** es el mec
 En lugar de asignarle permisos de forma individual a cada empleado, SQL Server nos permite crear **roles personalizados** (que funcionan como grupos o perfiles de trabajo), asignar los permisos a esos roles y luego sumar a los usuarios según su función en el negocio.
 
 ### Conceptos clave que aplicamos:
-* **Logins vs. Usuarios de Base de Datos:** El `Login` es la cuenta de acceso general al servidor de SQL Server, mientras que el `Usuario` es la identidad que tiene esa cuenta dentro de una base de datos específica (`BD_Joyeria_Practica`).
+* **Logins vs. Usuarios de Base de Datos:** El `Login` es la cuenta de acceso general al servidor de SQL Server, mientras que el `Usuario` es la identidad que tiene esa cuenta dentro de una base de datos específica (`BD_JoyeriaAlba`).
 * **Roles de DBMS:** Son contenedores de permisos que simplifican la administración. Si ingresa un nuevo vendedor, solo basta con sumarlo al rol de vendedores sin tener que reconfigurar la base de datos desde cero.
 * **Abstracción mediante Procedimientos Almacenados:** Consiste en denegar el permiso directo de modificación sobre una tabla (`INSERT`, `UPDATE`, `DELETE`), pero otorgar permiso de ejecución (`GRANT EXECUTE`) sobre un procedimiento almacenado. De esta manera, el usuario puede guardar datos pero únicamente bajo el flujo estricto que valida el procedimiento.
 
@@ -34,7 +34,7 @@ En **Joyería ALBA**, distintos empleados interactúan con el sistema con respon
 
 Para gestionar la seguridad y los permisos usamos las siguientes instrucciones de T-SQL:
 * **`CREATE LOGIN` / `DROP LOGIN`:** Crea o elimina las credenciales de acceso a nivel del servidor de base de datos.
-* **`CREATE USER` / `DROP USER`:** Vincula el inicio de sesión del servidor con un usuario interno de la base de datos `BD_Joyeria_Practica`.
+* **`CREATE USER` / `DROP USER`:** Vincula el inicio de sesión del servidor con un usuario interno de la base de datos `BD_JoyeriaAlba`.
 * **`CREATE ROLE`:** Define un nuevo rol personalizado para agrupar permisos según la función dentro del negocio.
 * **`GRANT`:** Otorga permisos específicos (`SELECT`, `INSERT`, `EXECUTE`) a un usuario o a un rol.
 * **`ALTER ROLE ... ADD MEMBER`:** Suma a un usuario como miembro de un rol del sistema (`db_owner`) o de un rol personalizado.
@@ -61,7 +61,7 @@ Para probar la seguridad en nuestro sistema definimos escenarios con perfiles di
 ### Configuración inicial de Usuarios, Roles y Permisos
 
 ```sql
-USE BD_Joyeria_Practica;
+USE BD_JoyeriaAlba;
 GO
 
 -- ============================================================================
@@ -136,7 +136,7 @@ GO
 
 **Lo que pasó en la prueba:**  
 El usuario administrador pudo realizar la inserción directa sin inconvenientes (`1 fila afectada`). En cambio, cuando simulamos la sesión con `usuario_lector`, SQL Server bloqueó la consulta arrojando el error explícito:
-> `The INSERT permission was denied on the object 'Producto', database 'BD_Joyeria_Practica', schema 'dbo'.`
+> `The INSERT permission was denied on the object 'Producto', database 'BD_JoyeriaAlba', schema 'dbo'.`
 
 * **Demostración:** El usuario `usuario_admin` pudo realizar modificaciones e inserciones directas sobre la tabla `Producto` (1 fila afectada), mientras que al intentar la misma operación directa con `usuario_lector`, el motor bloqueó la acción arrojando el error `The INSERT permission was denied on the object 'Producto'`.
 * **Conclusión:** Se verifica que la configuración de permisos directos impide que usuarios no autorizados modifiquen las tablas del sistema de forma arbitraria, protegiendo la integridad de la base de datos de Joyería Alba.

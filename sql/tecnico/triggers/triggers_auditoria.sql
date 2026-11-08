@@ -1,5 +1,5 @@
 
-USE BD_Joyeria_Practica;
+USE BD_JoyeriaAlba;
 GO
 
 /* =====================================================

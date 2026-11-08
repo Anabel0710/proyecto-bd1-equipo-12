@@ -18,7 +18,7 @@ La dirección de la joyería requiere evaluar las ventas por rubro durante un pe
 ### 3. Código SQL
 
 ```sql
-USE BD_Joyeria_Practica;
+USE BD_JoyeriaAlba;
 GO
 
 SELECT 

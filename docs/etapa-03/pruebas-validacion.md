@@ -13,7 +13,7 @@ registrados.
 ## Validaciones realizadas
 
 Los scripts DDL y DML fueron ejecutados en Microsoft SQL Server sobre
-la base de datos `BD_Joyeria_Practica`.
+la base de datos `BD_JoyeriaAlba`.
 
 Se verificó:
 

@@ -1,11 +1,11 @@
 /* =========================================================
    ARCHIVO: 01_datos_roles_usuarios.sql
    ========================================================= */
-USE BD_Joyeria_Practica;
+USE BD_JoyeriaAlba;
 GO
 
 /* =========================================================
-   DATOS DE PRUEBA: Rol
+   DATOS DE PRUEBA: Rol (8 registros)
    ========================================================= */
 
 INSERT INTO Rol (NombreRol)
@@ -13,12 +13,16 @@ VALUES
     ('Administrador'),
     ('Vendedor'),
     ('Encargado de inventario'),
-    ('Cliente');
+    ('Cliente'),
+    ('Gerente Comercial'),
+    ('Cajero'),
+    ('Auditor Contable'),
+    ('Orfebre / Taller');
 GO
 
 
 /* =========================================================
-   DATOS DE PRUEBA: Usuario
+   DATOS DE PRUEBA: Usuario (10 registros)
    ========================================================= */
 
 INSERT INTO Usuario (
@@ -159,11 +163,10 @@ GO
 /* =========================================================
    ARCHIVO: 02_datos_productos_categorias_generos.sql
    ========================================================= */
--- Seleccionar la base de datos del proyecto
-USE BD_Joyeria_Practica;
+USE BD_JoyeriaAlba;
 GO
 
--- Datos de prueba para Genero
+-- Datos de prueba para Genero (10 registros)
 INSERT INTO dbo.Genero (NombreGenero)
 VALUES
     ('Masculino'),
@@ -178,7 +181,7 @@ VALUES
     ('Sin Genero');
 GO
 
--- Datos de prueba para Categoria
+-- Datos de prueba para Categoria (10 registros)
 INSERT INTO dbo.Categoria (NombreCategoria)
 VALUES
     ('Collar'),
@@ -193,7 +196,7 @@ VALUES
     ('Rosario');
 GO
 
--- Datos de prueba para Producto
+-- Datos de prueba para Producto (10 registros)
 INSERT INTO dbo.Producto (
     Nombre,
     PrecioVenta,
@@ -318,30 +321,13 @@ VALUES
     );
 GO
 
--- Verificación de los datos insertados
-SELECT * FROM dbo.Genero;
-SELECT * FROM dbo.Categoria;
-SELECT * FROM dbo.Producto;
-GO
-
--- Verificación de la cantidad de registros
-SELECT COUNT(*) AS CantidadGeneros
-FROM dbo.Genero;
-
-SELECT COUNT(*) AS CantidadCategorias
-FROM dbo.Categoria;
-
-SELECT COUNT(*) AS CantidadProductos
-FROM dbo.Producto;
-GO
-
 /* =========================================================
    ARCHIVO: 03_datos_proveedor_mediopago_estadocompra.sql
    ========================================================= */
-USE BD_Joyeria_Practica;
+USE BD_JoyeriaAlba;
 GO
 
--- 1. Carga en MedioPago
+-- 1. Carga en MedioPago (8 registros)
 INSERT INTO MedioPago (NombreMedioPago) VALUES 
 ('Efectivo'),
 ('Tarjeta de Débito'),
@@ -353,7 +339,7 @@ INSERT INTO MedioPago (NombreMedioPago) VALUES
 ('Criptomoneda USDT');
 GO
 
--- 2. Carga en EstadoCompra
+-- 2. Carga en EstadoCompra (8 registros)
 INSERT INTO EstadoCompra (NombreEstadoCompra) VALUES 
 ('Pendiente'),
 ('Aprobada'),
@@ -365,7 +351,7 @@ INSERT INTO EstadoCompra (NombreEstadoCompra) VALUES
 ('Cancelada');
 GO
 
--- 3. Carga en Proveedor (sin guiones para CUIT y Teléfono)
+-- 3. Carga en Proveedor (8 registros)
 INSERT INTO Proveedor (RazonSocial, CUIT, Telefono, CorreoElectronico) VALUES 
 ('Metales del Norte S.A.', '30711234568', '03794421122', 'ventas@metalesdelnorte.com.ar'),
 ('Joyas y Gemas Argentinas S.R.L.', '30709876543', '01143219876', 'contacto@gemasarg.com.ar'),
@@ -380,20 +366,13 @@ GO
 /* =========================================================
    ARCHIVO: 04_compra_detalleCompra.sql
    ========================================================= */
-USE BD_Joyeria_Practica;
+USE BD_JoyeriaAlba;
 GO
 
--- 1. Vaciamos las tablas y reseteamos los contadores IDENTITY a 0
-DELETE FROM DetalleCompra;
-DELETE FROM Compra;
-DBCC CHECKIDENT ('Compra', RESEED, 0);
-GO
-
--- 2. Aseguramos el formato de fecha
 SET DATEFORMAT ymd;
 GO
 
--- 3. Insertamos las compras (se generarán los IdCompra del 1 al 8)
+-- 1. Insertamos las compras (8 registros)
 INSERT INTO Compra (FechaCompra, IdUsuario, IdProveedor, IdEstadoCompra, IdMedioPago) VALUES
 ('2026-09-01 09:30:00', 5, 1, 5, 1),
 ('2026-09-05 11:15:00', 5, 2, 5, 1),
@@ -405,7 +384,7 @@ INSERT INTO Compra (FechaCompra, IdUsuario, IdProveedor, IdEstadoCompra, IdMedio
 ('2026-09-30 12:00:00', 1, 8, 1, 3);
 GO
 
--- 4. Insertamos el detalle con IdCompra del 1 al 8
+-- 2. Insertamos el detalle de compras (8 registros)
 INSERT INTO DetalleCompra (IdCompra, Cantidad, PrecioUnitario, IdProducto) VALUES
 (1, 10, 110000.00, 1),
 (2, 20, 24000.00, 2),
@@ -417,84 +396,106 @@ INSERT INTO DetalleCompra (IdCompra, Cantidad, PrecioUnitario, IdProducto) VALUE
 (8, 6, 180000.00, 8);
 GO
 
-
 /* =========================================================
    ARCHIVO: 05_ventas_facturacion_ajustes.sql
    ========================================================= */
-USE BD_Joyeria_Practica;
+USE BD_JoyeriaAlba;
 GO
 
--- 1. Condición frente al IVA
+-- 1. Condición frente al IVA (8 registros)
 INSERT INTO CondicionIVA (CondicionIVA) VALUES
 ('Consumidor Final'),
 ('Responsable Inscripto'),
 ('Monotributo'),
-('Exento');
+('Exento'),
+('No Responsable'),
+('Sujeto No Categorizado'),
+('IVA Liberado - Ley 19.640'),
+('Monotributista Social');
 GO
 
--- 2. Tipo de Comprobante
+-- 2. Tipo de Comprobante (8 registros)
 INSERT INTO TipoComprobante (TipoComprobante) VALUES
 ('Factura B'),
 ('Factura A'),
 ('Ticket Consumidor Final'),
-('Nota de Crédito');
+('Nota de Crédito B'),
+('Nota de Crédito A'),
+('Nota de Débito B'),
+('Nota de Débito A'),
+('Factura C');
 GO
 
--- 3. Clientes
+-- 3. Clientes (8 registros)
 INSERT INTO Cliente (Nombre, Apellido, DNI_CUIT, Telefono, CorreoElectronico, idCondicionIVA) VALUES
 ('Mariana', 'Vazquez', '27356667774', '03794112233', 'mariana.vazquez@gmail.com', 1),
 ('Carlos', 'Benitez', '20304445558', '03794223344', 'carlos.benitez@hotmail.com', 1),
 ('Estilo & Elegancia S.A.', 'Gimenez', '30718889993', '01145556677', 'administracion@estiloelegancia.com.ar', 2),
 ('Lucia', 'Morales', '27389990001', '03794334455', 'lucia.morales@yahoo.com.ar', 3),
-('Roberto', 'Sosa', '20287778882', '03794556677', 'roberto.sosa@live.com', 1);
+('Roberto', 'Sosa', '20287778882', '03794556677', 'roberto.sosa@live.com', 1),
+('Valeria', 'Quiroga', '27401112229', '03794667788', 'valeria.quiroga@gmail.com', 1),
+('Inversiones del Litoral S.R.L.', 'Paredes', '30705554441', '03794778899', 'compras@litoralsrl.com.ar', 2),
+('Fernando', 'Rios', '20332221115', '03794889900', 'fernando.rios@outlook.com', 3);
 GO
 
--- 4. Ajustes de Stock
+-- 4. Ajustes de Stock (8 registros)
 INSERT INTO AjusteStock (FechaAjuste, TipoAjuste, CantidadAjuste, Observacion, idUsuario, CodigoProducto) VALUES
 ('2026-10-01 10:30:00', 'Rotura en vitrina', -1, 'Aro de plata dañado en exhibición del local', 1, 2),
 ('2026-10-05 18:00:00', 'Ajuste de inventario', 2, 'Sobrante detectado tras recuento mensual físico', 4, 3),
 ('2026-10-10 11:15:00', 'Merma por manipulación', -1, 'Cierre de pulsera defectuoso enviado a taller', 1, 5),
-('2026-10-15 16:45:00', 'Auditoría interna', -1, 'Diferencia en mostrador regularizada', 4, 1);
+('2026-10-15 16:45:00', 'Auditoría interna', -1, 'Diferencia en mostrador regularizada', 4, 1),
+('2026-10-18 09:20:00', 'Reingreso de taller', 1, 'Pieza reparada reincorporada al exhibidor', 4, 5),
+('2026-10-21 17:10:00', 'Ajuste de inventario', 1, 'Unidad hallada en caja fuerte secundaria', 1, 4),
+('2026-10-24 12:00:00', 'Muestra promocional', -1, 'Retiro temporal para sesión fotográfica de catálogo', 1, 7),
+('2026-10-28 19:00:00', 'Devolución a vitrina', 1, 'Reintegro de pieza tras sesión fotográfica', 4, 7);
 GO
 
--- 5. Recepciones de Mercadería (Asociadas a compras aprobadas y recibidas)
+-- 5. Recepciones de Mercadería (8 registros)
 INSERT INTO Recepcion (FechaRecepcion, idCompra, idUsuario) VALUES
 ('2026-09-03 14:00:00', 1, 4),
 ('2026-09-07 10:30:00', 2, 4),
 ('2026-09-12 16:00:00', 3, 4),
-('2026-09-17 11:45:00', 4, 4);
+('2026-09-17 11:45:00', 4, 4),
+('2026-09-22 15:20:00', 5, 4),
+('2026-09-25 09:40:00', 6, 4),
+('2026-09-29 18:10:00', 7, 4),
+('2026-10-01 11:00:00', 8, 4);
 GO
 
--- 6. Detalle de Recepción (Cantidades recibidas vs pedidas)
+-- 6. Detalle de Recepción (8 registros)
 INSERT INTO DetalleRecepcion (CantidadRecibida, idRecepcion, idDetalleCompra) VALUES
 (10, 1, 1),
 (20, 2, 2),
 (30, 3, 3),
-(15, 4, 4);
+(15, 4, 4),
+(10, 5, 5),
+(5, 6, 6),
+(4, 7, 7),
+(6, 8, 8);
 GO
 
--- 7. Comprobantes de Venta (Facturación en mostrador)
+-- 7. Comprobantes de Venta (8 registros)
 INSERT INTO Comprobante (FechaComprobante, idMedioPago, idTipoComprobante, idCliente, idUsuario) VALUES
 ('2026-10-02 10:15:00', 1, 1, 1, 2),
 ('2026-10-04 12:30:00', 3, 1, 2, 3),
 ('2026-10-08 17:45:00', 2, 2, 3, 2),
 ('2026-10-12 11:00:00', 1, 1, 4, 3),
 ('2026-10-16 19:20:00', 4, 1, 5, 2),
-('2026-10-20 16:10:00', 1, 3, 1, 3),
-('2026-10-25 18:35:00', 2, 1, 2, 2),
-('2026-10-29 11:50:00', 3, 2, 3, 2);
+('2026-10-20 16:10:00', 1, 3, 6, 3),
+('2026-10-25 18:35:00', 2, 2, 7, 2),
+('2026-10-29 11:50:00', 3, 1, 8, 2);
 GO
 
--- 8. Detalle de Comprobantes (Renglones de venta)
+-- 8. Detalle de Comprobantes (10 registros)
 INSERT INTO DetalleComprobante (idComprobante, Cantidad, PrecioUnitario, CodigoProducto) VALUES
-(1, 1, 220000.00, 1),
-(2, 2, 48000.00, 2),
-(3, 1, 23000.00, 3),
-(3, 1, 78000.00, 4),
-(4, 1, 58000.00, 5),
-(5, 1, 240000.00, 6),
-(6, 1, 440000.00, 7),
-(7, 1, 360000.00, 8),
-(8, 2, 220000.00, 1),
-(8, 1, 48000.00, 2);
+(1, 1, 150000.00, 1),
+(2, 2, 45000.00, 2),
+(3, 1, 28000.00, 3),
+(3, 1, 62000.00, 4),
+(4, 1, 220000.00, 5),
+(5, 1, 52000.00, 6),
+(6, 1, 38000.00, 7),
+(7, 1, 25000.00, 8),
+(8, 2, 18000.00, 9),
+(8, 1, 75000.00, 10);
 GO

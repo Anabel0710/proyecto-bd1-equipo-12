@@ -61,7 +61,7 @@ Evaluamos esta misma consulta en tres estados de la tabla:
 ### Preparación: Carga masiva automatizada (1.000.000 de registros)
 
 ```sql
-USE BD_Joyeria_Practica;
+USE BD_JoyeriaAlba;
 GO
 
 -- ============================================================================

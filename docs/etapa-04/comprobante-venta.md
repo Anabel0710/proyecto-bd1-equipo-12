@@ -15,7 +15,7 @@ Permite generar el comprobante o factura para el cliente al momento de concretar
 ### 3. Código SQL
 
 ```sql
-USE BD_Joyeria_Practica;
+USE BD_JoyeriaAlba;
 GO
 
 SELECT 

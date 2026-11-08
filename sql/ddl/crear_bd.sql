@@ -1,20 +1,20 @@
 /* =========================================================
    SISTEMA DE GESTIÓN COMERCIAL Y CONTROL DE INVENTARIO
    PROYECTO: Joyería ALBA (Equipo 12)
-   BASE DE DATOS: BD_Joyeria_Practica
+   BASE DE DATOS: BD_JoyeriaAlba
    DDL UNIFICADO - 18 TABLAS
    ========================================================= */
 
 USE master;
 GO
 
-IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = N'BD_Joyeria_Practica')
+IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = N'BD_JoyeriaAlba')
 BEGIN
-    CREATE DATABASE BD_Joyeria_Practica;
+    CREATE DATABASE BD_JoyeriaAlba;
 END
 GO
 
-USE BD_Joyeria_Practica;
+USE BD_JoyeriaAlba;
 GO
 
 /* =========================================================

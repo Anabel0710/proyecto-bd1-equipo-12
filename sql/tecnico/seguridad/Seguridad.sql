@@ -1,7 +1,7 @@
 -------------------------------------------------------------------------------
 -- SEGURIDAD -- 1.1 PERMISOS A NIVEL DE USUARIOS
 -------------------------------------------------------------------------------
-USE BD_Joyeria_Practica;
+USE BD_JoyeriaAlba;
 GO
 
 -- 1. Crear Logins e Usuarios de base de datos
