@@ -316,6 +316,12 @@ DetalleComprobante(
 
 ---
 
-## 5. Conclusión
+## 5. Diagrama del Modelo Relacional
+
+![Diagrama del Modelo Relacional](modelo-relacional/JoyeriaAlba.png)
+
+---
+
+## 6. Conclusión
 
 El esquema relacional resultante de 18 tablas proporciona una arquitectura robusta, normalizada y escalable para Joyería ALBA. Resuelve de manera eficiente la separación de flujos de compra y venta, asegura la trazabilidad estricta de existencias de joyas y mantiene la exactitud de los precios históricos frente a fluctuaciones de mercado.

@@ -16,7 +16,7 @@ FROM Producto p
 INNER JOIN Categoria c ON p.idCategoria = c.idCategoria
 INNER JOIN Genero g ON p.idGenero = g.idGenero
 WHERE p.StockActual <= 10 
-  AND p.Estado = 'Disponible'
+  AND p.Estado IN ('ACTIVO', 'Disponible')
 ORDER BY p.StockActual ASC;
 GO
 
@@ -27,13 +27,13 @@ SELECT
     a.idAjuste,
     a.FechaAjuste,
     CONCAT(u.Nombre, ' ', u.Apellido) AS EmpleadoResponsable,
-    u.Usuario AS LoginUsuario,
+    u.NombreUsuario AS LoginUsuario,
     p.Nombre AS ProductoAfectado,
     a.TipoAjuste,
     a.CantidadAjuste,
     a.Observacion
 FROM AjusteStock a
-INNER JOIN Usuario u ON a.idUsuario = u.idUsuario
+INNER JOIN Usuario u ON a.idUsuario = u.IdUsuario
 INNER JOIN Producto p ON a.CodigoProducto = p.CodigoProducto
 ORDER BY a.FechaAjuste DESC;
 GO
@@ -42,7 +42,7 @@ GO
 -- Caso de Uso 3: Verificación de Cumplimiento de Entregas de Proveedores
 -- =================================================================
 SELECT
-    c.idCompra AS NroOrdenCompra,
+    c.IdCompra AS NroOrdenCompra,
     pr.RazonSocial AS Proveedor,
     p.Nombre AS Producto,
     dc.Cantidad AS CantidadPedida,
@@ -50,10 +50,10 @@ SELECT
     (dc.Cantidad - ISNULL(dr.CantidadRecibida, 0)) AS DiferenciaFaltante,
     r.FechaRecepcion
 FROM Compra c
-INNER JOIN Proveedor pr ON c.idProveedor = pr.idProveedor
-INNER JOIN DetalleCompra dc ON c.idCompra = dc.idCompra
-INNER JOIN Producto p ON dc.CodigoProducto = p.CodigoProducto
-LEFT JOIN DetalleRecepcion dr ON dc.idDetalleCompra = dr.idDetalleCompra
+INNER JOIN Proveedor pr ON c.IdProveedor = pr.IdProveedor
+INNER JOIN DetalleCompra dc ON c.IdCompra = dc.IdCompra
+INNER JOIN Producto p ON dc.IdProducto = p.CodigoProducto
+LEFT JOIN DetalleRecepcion dr ON dc.IdDetalleCompra = dr.idDetalleCompra
 LEFT JOIN Recepcion r ON dr.idRecepcion = r.idRecepcion
-ORDER BY c.idCompra ASC;
+ORDER BY c.IdCompra ASC;
 GO
