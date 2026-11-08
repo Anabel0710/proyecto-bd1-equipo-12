@@ -8,7 +8,6 @@ Equipo 12
 
 - Rodriguez Mercedes Antonella
 - Gonzalez Rocío Anabel
-- Nuñez Cesar Ivan
 - Delgado Maria Florencia
 - Demetri Luciana Itati
 

@@ -1,4 +1,5 @@
-
+USE BD_Joyeria_Practica;
+GO
 
 -- ============================================================================
 -- PARTE 2: OPTIMIZACIÓN DE CONSULTAS A TRAVÉS DE ÍNDICES

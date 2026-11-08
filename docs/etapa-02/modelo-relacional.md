@@ -1,349 +1,321 @@
-# Modelo relacional
+# Modelo Relacional
 
 ## 1. Introducción
 
-El presente modelo relacional surge de la transformación del Diagrama Entidad-Relación del Sistema de Gestión Comercial y Control de Inventario para Joyería.
+El presente modelo relacional representa la estructura lógica de datos para el Sistema de Gestión Comercial, Control de Inventario y Facturación de **Joyería ALBA**.
 
-Las entidades del DER se transformaron en relaciones, sus atributos identificadores se convirtieron en claves primarias y las relaciones 1:N se implementaron mediante claves foráneas.
-
-La relación N:M entre ORDEN y PRODUCTO se transformó en la relación intermedia DETALLE_ORDEN.
+Surge de la evolución del diseño conceptual inicial hacia un modelo transaccional completo compuesto por **18 relaciones**, organizadas en torno a cuatro circuitos operativos fundamentales:
+1. **Administración de accesos y seguridad:** `Rol` y `Usuario`.
+2. **Catálogo de productos e inventario:** `Categoria`, `Genero`, `Producto` y `AjusteStock`.
+3. **Circuito de abastecimiento (Compras):** `Proveedor`, `EstadoCompra`, `MedioPago`, `Compra`, `DetalleCompra`, `Recepcion` y `DetalleRecepcion`.
+4. **Circuito de ventas y facturación:** `CondicionIVA`, `Cliente`, `TipoComprobante`, `Comprobante` y `DetalleComprobante`.
 
 ### Referencias utilizadas
-
-- **PK:** clave primaria.
-- **FK:** clave foránea.
-- **UK:** clave única.
-- **NULL:** atributo opcional.
-- **NOT NULL:** atributo obligatorio.
+* **PK:** Clave primaria (*Primary Key*).
+* **FK:** Clave foránea (*Foreign Key*).
+* **UK:** Clave única (*Unique Key*).
+* **NULL:** Atributo opcional.
+* **NOT NULL:** Atributo obligatorio.
 
 ---
 
-## 2. Relaciones resultantes
+## 2. Relaciones Resultantes por Módulo
 
-### ROL
+### Módulo A: Accesos y Seguridad
 
-ROL(
-    id_rol PK,
-    nombre_rol UK NOT NULL
+#### ROL
+```text
+Rol(
+    IdRol PK,
+    NombreRol UK NOT NULL
 )
+```
+Almacena los perfiles de usuario del sistema (ej. Administrador, Vendedor, Encargado de inventario, Cliente).
 
-La relación ROL almacena los diferentes roles que pueden asignarse a los usuarios, como Cliente o Administrador.
-
----
-
-### USUARIO
-
-USUARIO(
-    id_usuario PK,
-    nombre NOT NULL,
-    apellido NOT NULL,
-    email UK NOT NULL,
-    contrasenia NOT NULL,
-    id_rol FK NOT NULL
+#### USUARIO
+```text
+Usuario(
+    IdUsuario PK,
+    Nombre NOT NULL,
+    Apellido NOT NULL,
+    DNI UK NOT NULL,
+    NombreUsuario UK NOT NULL,
+    Contrasenia NOT NULL,
+    Email UK NOT NULL,
+    Estado NOT NULL,
+    Domicilio NULL,
+    Telefono NULL,
+    IdRol FK NOT NULL
 )
-
-**Clave foránea:**
-
-- id_rol referencia a ROL(id_rol).
-
-Cada usuario debe tener asignado un único rol. Un rol puede estar asignado a varios usuarios.
-
-El email se define como único para cumplir con la regla RN.01, que impide registrar dos cuentas con la misma dirección de correo electrónico.
+```
+* **Clave foránea:** `IdRol` referencia a `Rol(IdRol)`.
+* Representa al personal y usuarios registrados de la joyería. El atributo `Estado` permite aplicar baja lógica (`'Activo'`, `'Inactivo'`).
 
 ---
 
-### CATEGORIA
+### Módulo B: Catálogo de Joyas e Inventario
 
-CATEGORIA(
-    id_categoria PK,
-    nombre_categoria UK NOT NULL
+#### CATEGORIA
+```text
+Categoria(
+    idCategoria PK,
+    NombreCategoria UK NOT NULL
 )
+```
+Clasifica las piezas de joyería (ej. Anillos, Cadenas, Pulseras, Relojes).
 
-La relación CATEGORIA almacena las categorías utilizadas para clasificar los productos, por ejemplo: anillos, aretes, pulseras y collares.
-
----
-
-### GENERO
-
-GENERO(
-    id_genero PK,
-    nombre_genero UK NOT NULL
+#### GENERO
+```text
+Genero(
+    idGenero PK,
+    NombreGenero UK NOT NULL
 )
+```
+Clasifica las joyas según el público destinatario (ej. Dama, Caballero, Unisex).
 
-La relación GENERO almacena el género o público al que pertenece cada joya.
-
----
-
-### PRODUCTO
-
-PRODUCTO(
-    id_producto PK,
-    nombre NOT NULL,
-    descripcion,
-    precio_actual NOT NULL,
-    stock_actual NOT NULL,
-    stock_minimo NOT NULL,
-    activo NOT NULL,
-    id_categoria FK NOT NULL,
-    id_genero FK NOT NULL
+#### PRODUCTO
+```text
+Producto(
+    CodigoProducto PK,
+    Nombre NOT NULL,
+    PrecioVenta NOT NULL,
+    PrecioCompra NOT NULL,
+    StockActual NOT NULL,
+    StockMinimo NOT NULL,
+    Descripcion NULL,
+    Estado NOT NULL,
+    idGenero FK NOT NULL,
+    idCategoria FK NOT NULL
 )
+```
+* **Claves foráneas:**
+  * `idGenero` referencia a `Genero(idGenero)`.
+  * `idCategoria` referencia a `Categoria(idCategoria)`.
+* Representa el catálogo físico de joyas. Contiene precios vigentes y existencias de stock. El campo `Estado` implementa la baja lógica (`'ACTIVO'`, `'INACTIVO'`).
 
-**Claves foráneas:**
-
-- id_categoria referencia a CATEGORIA(id_categoria).
-- id_genero referencia a GENERO(id_genero).
-
-Cada producto pertenece a una única categoría y a un único género. Una categoría o género puede estar relacionado con varios productos.
-
-El atributo precio_actual representa el precio vigente del producto en el catálogo.
-
-Los atributos stock_actual y stock_minimo permiten controlar la disponibilidad y determinar cuándo un producto se encuentra sin stock o con poco stock.
-
-El atributo activo permite aplicar una baja lógica sin eliminar productos que formen parte del historial de ventas.
-
----
-
-### METODO_PAGO
-
-METODO_PAGO(
-    id_metodo_pago PK,
-    nombre_metodo UK NOT NULL
+#### AJUSTESTOCK
+```text
+AjusteStock(
+    idAjuste PK,
+    FechaAjuste NOT NULL,
+    TipoAjuste NOT NULL,
+    CantidadAjuste NOT NULL,
+    Observacion NULL,
+    idUsuario FK NOT NULL,
+    CodigoProducto FK NOT NULL
 )
-
-La relación METODO_PAGO almacena los medios de pago aceptados por el sistema, como transferencia, tarjeta de débito, tarjeta de crédito y efectivo.
+```
+* **Claves foráneas:**
+  * `idUsuario` referencia a `Usuario(IdUsuario)`.
+  * `CodigoProducto` referencia a `Producto(CodigoProducto)`.
+* Registra movimientos extraordinarios de inventario (mermas, roturas en vitrina, sobrantes o faltantes de inventario físico), auditando al usuario responsable.
 
 ---
 
-### ORDEN
+### Módulo C: Abastecimiento y Compras a Proveedores
 
-ORDEN(
-    id_orden PK,
-    fecha_hora NOT NULL,
-    estado NOT NULL,
-    id_usuario FK NOT NULL,
-    id_metodo_pago FK NOT NULL
+#### PROVEEDOR
+```text
+Proveedor(
+    IdProveedor PK,
+    RazonSocial NOT NULL,
+    CUIT UK NOT NULL,
+    Telefono NOT NULL,
+    CorreoElectronico NULL
 )
+```
+Almacena a los fabricantes y distribuidores mayoristas de metales y piedras preciosas.
 
-**Claves foráneas:**
-
-- id_usuario referencia a USUARIO(id_usuario).
-- id_metodo_pago referencia a METODO_PAGO(id_metodo_pago).
-
-Cada orden es realizada por un único usuario y debe registrar obligatoriamente un método de pago.
-
-El atributo estado permite indicar la situación actual de la orden, por ejemplo: Pendiente, Pagado o Cancelado.
-
-El total no se almacena físicamente en esta relación porque puede calcularse sumando los importes de sus detalles.
-
----
-
-### DETALLE_ORDEN
-
-DETALLE_ORDEN(
-    id_orden PK, FK,
-    id_producto PK, FK,
-    cantidad NOT NULL,
-    precio_unitario NOT NULL
+#### ESTADOCOMPRA
+```text
+EstadoCompra(
+    IdEstadoCompra PK,
+    NombreEstadoCompra NOT NULL
 )
+```
+Catálogo con los estados del pedido de compra (ej. Pendiente, Aprobada, Recibida Conforme, Cancelada).
 
-**Clave primaria compuesta:**
-
-- PK(id_orden, id_producto).
-
-**Claves foráneas:**
-
-- id_orden referencia a ORDEN(id_orden).
-- id_producto referencia a PRODUCTO(id_producto).
-
-DETALLE_ORDEN surge de la transformación de la relación N:M CONTIENE existente entre ORDEN y PRODUCTO.
-
-La clave primaria compuesta impide que un mismo producto aparezca más de una vez dentro de la misma orden. Cuando se adquieren varias unidades, esa información se registra mediante el atributo cantidad.
-
-El atributo precio_unitario conserva el precio que tenía el producto en el momento de la operación. Los cambios posteriores en precio_actual de PRODUCTO no modifican el historial de ventas.
-
-El subtotal no se almacena porque puede calcularse mediante:
-
-subtotal = cantidad × precio_unitario
-
----
-
-### CONSULTA
-
-CONSULTA(
-    id_consulta PK,
-    nombre_remitente NOT NULL,
-    email_remitente NOT NULL,
-    fecha_hora NOT NULL,
-    estado NOT NULL,
-    mensaje NOT NULL,
-    id_usuario FK NULL
+#### MEDIOPAGO
+```text
+MedioPago(
+    IdMedioPago PK,
+    NombreMedioPago NOT NULL
 )
+```
+Medios de pago admitidos para transacciones comerciales (Efectivo, Transferencia, Tarjeta de Débito, Tarjeta de Crédito).
 
-**Clave foránea:**
-
-- id_usuario referencia a USUARIO(id_usuario).
-
-La clave foránea id_usuario es opcional porque la consulta puede ser enviada por un usuario registrado o por un visitante.
-
-Cuando la consulta corresponde a un visitante, id_usuario puede tener un valor nulo. Los datos del remitente se conservan mediante nombre_remitente y email_remitente.
-
----
-
-## 3. Transformación de las relaciones
-
-### Relación entre ROL y USUARIO
-
-La relación 1:N SE_ASIGNA se implementó agregando id_rol como clave foránea en USUARIO.
-
-ROL 1 ─── N USUARIO
-
----
-
-### Relación entre USUARIO y ORDEN
-
-La relación 1:N REALIZA se implementó agregando id_usuario como clave foránea en ORDEN.
-
-USUARIO 1 ─── N ORDEN
-
----
-
-### Relación entre METODO_PAGO y ORDEN
-
-La relación 1:N UTILIZA se implementó agregando id_metodo_pago como clave foránea en ORDEN.
-
-METODO_PAGO 1 ─── N ORDEN
-
----
-
-### Relación entre CATEGORIA y PRODUCTO
-
-La relación 1:N CLASIFICA se implementó agregando id_categoria como clave foránea en PRODUCTO.
-
-CATEGORIA 1 ─── N PRODUCTO
-
----
-
-### Relación entre GENERO y PRODUCTO
-
-La relación 1:N PERTENECE se implementó agregando id_genero como clave foránea en PRODUCTO.
-
-GENERO 1 ─── N PRODUCTO
-
----
-
-### Relación entre ORDEN y PRODUCTO
-
-La relación N:M CONTIENE se transformó en DETALLE_ORDEN.
-
-ORDEN N ─── M PRODUCTO
-
-DETALLE_ORDEN incorpora las claves de ORDEN y PRODUCTO, además de los atributos propios de la relación:
-
-- cantidad;
-- precio_unitario.
-
----
-
-### Relación entre USUARIO y CONSULTA
-
-La relación ENVIA se implementó agregando id_usuario como clave foránea opcional en CONSULTA.
-
-USUARIO 1 ─── N CONSULTA
-
-La clave foránea admite valores nulos porque las consultas también pueden ser enviadas por visitantes.
-
----
-
-## 4. Resumen de claves
-
-| Relación | Clave primaria | Claves foráneas |
-|---|---|---|
-| ROL | id_rol | — |
-| USUARIO | id_usuario | id_rol |
-| CATEGORIA | id_categoria | — |
-| GENERO | id_genero | — |
-| PRODUCTO | id_producto | id_categoria, id_genero |
-| METODO_PAGO | id_metodo_pago | — |
-| ORDEN | id_orden | id_usuario, id_metodo_pago |
-| DETALLE_ORDEN | id_orden, id_producto | id_orden, id_producto |
-| CONSULTA | id_consulta | id_usuario |
-
----
-
-## 5. Esquema relacional completo
-
-ROL(
-    id_rol PK,
-    nombre_rol UK NOT NULL
+#### COMPRA
+```text
+Compra(
+    IdCompra PK,
+    FechaCompra NOT NULL,
+    IdUsuario FK NOT NULL,
+    IdProveedor FK NOT NULL,
+    IdEstadoCompra FK NOT NULL,
+    IdMedioPago FK NOT NULL
 )
+```
+* **Claves foráneas:**
+  * `IdUsuario` referencia a `Usuario(IdUsuario)`.
+  * `IdProveedor` referencia a `Proveedor(IdProveedor)`.
+  * `IdEstadoCompra` referencia a `EstadoCompra(IdEstadoCompra)`.
+  * `IdMedioPago` referencia a `MedioPago(IdMedioPago)`.
+* Cabecera de la orden de compra emitida a un proveedor mayorista.
 
-USUARIO(
-    id_usuario PK,
-    nombre NOT NULL,
-    apellido NOT NULL,
-    email UK NOT NULL,
-    contrasenia NOT NULL,
-    id_rol FK NOT NULL
+#### DETALLECOMPRA
+```text
+DetalleCompra(
+    IdDetalleCompra PK,
+    IdCompra FK NOT NULL,
+    Cantidad NOT NULL,
+    PrecioUnitario NOT NULL,
+    IdProducto FK NOT NULL
 )
+```
+* **Claves foráneas:**
+  * `IdCompra` referencia a `Compra(IdCompra)`.
+  * `IdProducto` referencia a `Producto(CodigoProducto)`.
+* Renglones de la orden de compra. Preserva el `PrecioUnitario` pactado al momento de emitir la compra.
 
-CATEGORIA(
-    id_categoria PK,
-    nombre_categoria UK NOT NULL
+#### RECEPCION
+```text
+Recepcion(
+    idRecepcion PK,
+    FechaRecepcion NOT NULL,
+    idCompra FK NOT NULL,
+    idUsuario FK NOT NULL
 )
+```
+* **Claves foráneas:**
+  * `idCompra` referencia a `Compra(IdCompra)`.
+  * `idUsuario` referencia a `Usuario(IdUsuario)`.
+* Registra el ingreso físico real de mercadería a depósito asociado a una orden de compra previa.
 
-GENERO(
-    id_genero PK,
-    nombre_genero UK NOT NULL
+#### DETALLERECEPCION
+```text
+DetalleRecepcion(
+    idDetalleRecepcion PK,
+    CantidadRecibida NOT NULL,
+    idRecepcion FK NOT NULL,
+    idDetalleCompra FK NOT NULL
 )
-
-PRODUCTO(
-    id_producto PK,
-    nombre NOT NULL,
-    descripcion,
-    precio_actual NOT NULL,
-    stock_actual NOT NULL,
-    stock_minimo NOT NULL,
-    activo NOT NULL,
-    id_categoria FK NOT NULL,
-    id_genero FK NOT NULL
-)
-
-METODO_PAGO(
-    id_metodo_pago PK,
-    nombre_metodo UK NOT NULL
-)
-
-ORDEN(
-    id_orden PK,
-    fecha_hora NOT NULL,
-    estado NOT NULL,
-    id_usuario FK NOT NULL,
-    id_metodo_pago FK NOT NULL
-)
-
-DETALLE_ORDEN(
-    id_orden PK, FK,
-    id_producto PK, FK,
-    cantidad NOT NULL,
-    precio_unitario NOT NULL
-)
-
-CONSULTA(
-    id_consulta PK,
-    nombre_remitente NOT NULL,
-    email_remitente NOT NULL,
-    fecha_hora NOT NULL,
-    estado NOT NULL,
-    mensaje NOT NULL,
-    id_usuario FK NULL
-)
+```
+* **Claves foráneas:**
+  * `idRecepcion` referencia a `Recepcion(idRecepcion)`.
+  * `idDetalleCompra` referencia a `DetalleCompra(IdDetalleCompra)`.
+* Detalla las unidades efectivamente recibidas por ítem, permitiendo controlar entregas parciales frente a lo comprado.
 
 ---
 
-## 6. Conclusión
+### Módulo D: Clientes, Ventas y Facturación
 
-La transformación del DER al modelo relacional permitió representar las entidades mediante relaciones y las asociaciones 1:N mediante claves foráneas.
+#### CONDICIONIVA
+```text
+CondicionIVA(
+    idCondicionIVA PK,
+    CondicionIVA UK NOT NULL
+)
+```
+Tipos impositivos frente a AFIP/ARCA (ej. Responsable Inscripto, Monotributo, Consumidor Final, Exento).
 
-La relación N:M entre ORDEN y PRODUCTO se resolvió mediante DETALLE_ORDEN, que conserva la cantidad y el precio unitario histórico de cada producto vendido.
+#### CLIENTE
+```text
+Cliente(
+    idCliente PK,
+    Nombre NOT NULL,
+    Apellido NOT NULL,
+    DNI_CUIT UK NOT NULL,
+    Telefono NULL,
+    CorreoElectronico NULL,
+    idCondicionIVA FK NOT NULL
+)
+```
+* **Clave foránea:** `idCondicionIVA` referencia a `CondicionIVA(idCondicionIVA)`.
+* Almacena los datos fiscales y de contacto de compradores recurrentes o empresas.
 
-El modelo resultante mantiene la integridad referencial, evita redundancias y permite implementar las reglas de negocio definidas en la Etapa 1.
+#### TIPOCOMPROBANTE
+```text
+TipoComprobante(
+    idTipoComprobante PK,
+    TipoComprobante UK NOT NULL
+)
+```
+Clasificación legal del documento contable emitido (ej. Factura A, Factura B, Ticket Consumidor Final, Nota de Crédito).
+
+#### COMPROBANTE
+```text
+Comprobante(
+    idComprobante PK,
+    FechaComprobante NOT NULL,
+    idMedioPago FK NOT NULL,
+    idTipoComprobante FK NOT NULL,
+    idCliente FK NOT NULL,
+    idUsuario FK NOT NULL
+)
+```
+* **Claves foráneas:**
+  * `idMedioPago` referencia a `MedioPago(IdMedioPago)`.
+  * `idTipoComprobante` referencia a `TipoComprobante(idTipoComprobante)`.
+  * `idCliente` referencia a `Cliente(idCliente)`.
+  * `idUsuario` referencia a `Usuario(IdUsuario)`.
+* Cabecera de la factura o ticket de venta emitido en mostrador. Asocia al cliente atendido, al vendedor responsable y la modalidad de cobro.
+
+#### DETALLECOMPROBANTE
+```text
+DetalleComprobante(
+    idDetalleComprobante PK,
+    idComprobante FK NOT NULL,
+    Cantidad NOT NULL,
+    PrecioUnitario NOT NULL,
+    CodigoProducto FK NOT NULL
+)
+```
+* **Claves foráneas:**
+  * `idComprobante` referencia a `Comprobante(idComprobante)`.
+  * `CodigoProducto` referencia a `Producto(CodigoProducto)`.
+* Renglones del comprobante de venta. Almacena el `PrecioUnitario` histórico de venta, protegiendo las cifras de facturación frente a posteriores aumentos de precio de la joya.
+
+---
+
+## 3. Resumen de Claves del Esquema
+
+| Relación | Clave Primaria (PK) | Claves Foráneas (FK) | Claves Únicas (UK) |
+|---|---|---|---|
+| **Rol** | `IdRol` | — | `NombreRol` |
+| **Usuario** | `IdUsuario` | `IdRol` | `DNI`, `NombreUsuario`, `Email` |
+| **Categoria** | `idCategoria` | — | `NombreCategoria` |
+| **Genero** | `idGenero` | — | `NombreGenero` |
+| **Producto** | `CodigoProducto` | `idGenero`, `idCategoria` | — |
+| **AjusteStock** | `idAjuste` | `idUsuario`, `CodigoProducto` | — |
+| **Proveedor** | `IdProveedor` | — | `CUIT` |
+| **EstadoCompra** | `IdEstadoCompra` | — | — |
+| **MedioPago** | `IdMedioPago` | — | — |
+| **Compra** | `IdCompra` | `IdUsuario`, `IdProveedor`, `IdEstadoCompra`, `IdMedioPago` | — |
+| **DetalleCompra** | `IdDetalleCompra` | `IdCompra`, `IdProducto` | — |
+| **Recepcion** | `idRecepcion` | `idCompra`, `idUsuario` | — |
+| **DetalleRecepcion** | `idDetalleRecepcion` | `idRecepcion`, `idDetalleCompra` | — |
+| **CondicionIVA** | `idCondicionIVA` | — | `CondicionIVA` |
+| **Cliente** | `idCliente` | `idCondicionIVA` | `DNI_CUIT` |
+| **TipoComprobante** | `idTipoComprobante` | — | `TipoComprobante` |
+| **Comprobante** | `idComprobante` | `idMedioPago`, `idTipoComprobante`, `idCliente`, `idUsuario` | — |
+| **DetalleComprobante** | `idDetalleComprobante` | `idComprobante`, `CodigoProducto` | — |
+
+---
+
+## 4. Reglas de Integridad Referencial Aplicadas
+
+* **Integridad de Entidad:** Cada relación posee una clave primaria simple con numeración autoincremental (`IDENTITY`), garantizando unicidad y alto rendimiento en búsquedas e índices.
+* **Integridad Referencial:** Todas las claves foráneas hacen referencia a claves primarias válidas en sus tablas de origen. Para resguardar el historial contable ante intentos accidentales de borrado, se aplica la directiva `ON DELETE NO ACTION`.
+* **Integridad de Dominio (`CHECK`):**
+  * `PrecioVenta > 0` y `PrecioCompra >= 0` en `Producto`.
+  * `StockActual >= 0` y `StockMinimo >= 0` en `Producto`.
+  * `Cantidad > 0` y `PrecioUnitario >= 0` en `DetalleComprobante` y `DetalleCompra`.
+  * `CantidadRecibida >= 0` en `DetalleRecepcion`.
+  * `CantidadAjuste <> 0` en `AjusteStock`.
+  * Formato válido de correo electrónico en `Cliente` y `Usuario`.
+
+---
+
+## 5. Conclusión
+
+El esquema relacional resultante de 18 tablas proporciona una arquitectura robusta, normalizada y escalable para Joyería ALBA. Resuelve de manera eficiente la separación de flujos de compra y venta, asegura la trazabilidad estricta de existencias de joyas y mantiene la exactitud de los precios históricos frente a fluctuaciones de mercado.

@@ -32,12 +32,37 @@ ALTER ROLE db_owner ADD MEMBER usuario_admin;
 GRANT SELECT ON dbo.Producto TO usuario_lector;
 GO
 
--- 3. Al usuario con permiso de solo lectura, darle permiso de ejecución sobre el procedimiento almacenado
+-- 3. Crear el procedimiento almacenado sp_InsertarProducto si no existe
+IF OBJECT_ID('dbo.sp_InsertarProducto', 'P') IS NOT NULL
+    DROP PROCEDURE dbo.sp_InsertarProducto;
+GO
+
+CREATE PROCEDURE dbo.sp_InsertarProducto
+    @Nombre VARCHAR(100),
+    @PrecioVenta DECIMAL(10,2),
+    @PrecioCompra DECIMAL(10,2),
+    @StockActual INT = 0,
+    @StockMinimo INT = 1,
+    @Descripcion VARCHAR(255) = NULL,
+    @Estado VARCHAR(20) = 'Disponible',
+    @idGenero INT,
+    @idCategoria INT,
+    @NuevoCodigo INT OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    INSERT INTO dbo.Producto (Nombre, PrecioVenta, PrecioCompra, StockActual, StockMinimo, Descripcion, Estado, idGenero, idCategoria)
+    VALUES (@Nombre, @PrecioVenta, @PrecioCompra, @StockActual, @StockMinimo, @Descripcion, @Estado, @idGenero, @idCategoria);
+    SET @NuevoCodigo = SCOPE_IDENTITY();
+END;
+GO
+
+-- 4. Al usuario con permiso de solo lectura, darle permiso de ejecución sobre el procedimiento almacenado
 
 GRANT EXECUTE ON dbo.sp_InsertarProducto TO usuario_lector;
 GO
 
--- 4. PRUEBAS DE VERIFICACIÓN (Permisos a Nivel de Usuarios)
+-- 5. PRUEBAS DE VERIFICACIÓN (Permisos a Nivel de Usuarios)
 -- ----------------------------------------------------------------------------
 
 -- PRUEBA A: Realizar INSERT con sentencia SQL directa sobre la tabla Producto

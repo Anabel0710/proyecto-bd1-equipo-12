@@ -416,3 +416,85 @@ INSERT INTO DetalleCompra (IdCompra, Cantidad, PrecioUnitario, IdProducto) VALUE
 (7, 4, 220000.00, 7),
 (8, 6, 180000.00, 8);
 GO
+
+
+/* =========================================================
+   ARCHIVO: 05_ventas_facturacion_ajustes.sql
+   ========================================================= */
+USE BD_Joyeria_Practica;
+GO
+
+-- 1. Condición frente al IVA
+INSERT INTO CondicionIVA (CondicionIVA) VALUES
+('Consumidor Final'),
+('Responsable Inscripto'),
+('Monotributo'),
+('Exento');
+GO
+
+-- 2. Tipo de Comprobante
+INSERT INTO TipoComprobante (TipoComprobante) VALUES
+('Factura B'),
+('Factura A'),
+('Ticket Consumidor Final'),
+('Nota de Crédito');
+GO
+
+-- 3. Clientes
+INSERT INTO Cliente (Nombre, Apellido, DNI_CUIT, Telefono, CorreoElectronico, idCondicionIVA) VALUES
+('Mariana', 'Vazquez', '27356667774', '03794112233', 'mariana.vazquez@gmail.com', 1),
+('Carlos', 'Benitez', '20304445558', '03794223344', 'carlos.benitez@hotmail.com', 1),
+('Estilo & Elegancia S.A.', 'Gimenez', '30718889993', '01145556677', 'administracion@estiloelegancia.com.ar', 2),
+('Lucia', 'Morales', '27389990001', '03794334455', 'lucia.morales@yahoo.com.ar', 3),
+('Roberto', 'Sosa', '20287778882', '03794556677', 'roberto.sosa@live.com', 1);
+GO
+
+-- 4. Ajustes de Stock
+INSERT INTO AjusteStock (FechaAjuste, TipoAjuste, CantidadAjuste, Observacion, idUsuario, CodigoProducto) VALUES
+('2026-10-01 10:30:00', 'Rotura en vitrina', -1, 'Aro de plata dañado en exhibición del local', 1, 2),
+('2026-10-05 18:00:00', 'Ajuste de inventario', 2, 'Sobrante detectado tras recuento mensual físico', 4, 3),
+('2026-10-10 11:15:00', 'Merma por manipulación', -1, 'Cierre de pulsera defectuoso enviado a taller', 1, 5),
+('2026-10-15 16:45:00', 'Auditoría interna', -1, 'Diferencia en mostrador regularizada', 4, 1);
+GO
+
+-- 5. Recepciones de Mercadería (Asociadas a compras aprobadas y recibidas)
+INSERT INTO Recepcion (FechaRecepcion, idCompra, idUsuario) VALUES
+('2026-09-03 14:00:00', 1, 4),
+('2026-09-07 10:30:00', 2, 4),
+('2026-09-12 16:00:00', 3, 4),
+('2026-09-17 11:45:00', 4, 4);
+GO
+
+-- 6. Detalle de Recepción (Cantidades recibidas vs pedidas)
+INSERT INTO DetalleRecepcion (CantidadRecibida, idRecepcion, idDetalleCompra) VALUES
+(10, 1, 1),
+(20, 2, 2),
+(30, 3, 3),
+(15, 4, 4);
+GO
+
+-- 7. Comprobantes de Venta (Facturación en mostrador)
+INSERT INTO Comprobante (FechaComprobante, idMedioPago, idTipoComprobante, idCliente, idUsuario) VALUES
+('2026-10-02 10:15:00', 1, 1, 1, 2),
+('2026-10-04 12:30:00', 3, 1, 2, 3),
+('2026-10-08 17:45:00', 2, 2, 3, 2),
+('2026-10-12 11:00:00', 1, 1, 4, 3),
+('2026-10-16 19:20:00', 4, 1, 5, 2),
+('2026-10-20 16:10:00', 1, 3, 1, 3),
+('2026-10-25 18:35:00', 2, 1, 2, 2),
+('2026-10-29 11:50:00', 3, 2, 3, 2);
+GO
+
+-- 8. Detalle de Comprobantes (Renglones de venta)
+INSERT INTO DetalleComprobante (idComprobante, Cantidad, PrecioUnitario, CodigoProducto) VALUES
+(1, 1, 220000.00, 1),
+(2, 2, 48000.00, 2),
+(3, 1, 23000.00, 3),
+(3, 1, 78000.00, 4),
+(4, 1, 58000.00, 5),
+(5, 1, 240000.00, 6),
+(6, 1, 440000.00, 7),
+(7, 1, 360000.00, 8),
+(8, 2, 220000.00, 1),
+(8, 1, 48000.00, 2);
+GO

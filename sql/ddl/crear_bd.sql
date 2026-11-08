@@ -1,14 +1,27 @@
 /* =========================================================
-   ARCHIVO: 01_roles_usuarios.sql
+   SISTEMA DE GESTIÓN COMERCIAL Y CONTROL DE INVENTARIO
+   PROYECTO: Joyería ALBA (Equipo 12)
+   BASE DE DATOS: BD_Joyeria_Practica
+   DDL UNIFICADO - 18 TABLAS
    ========================================================= */
+
+USE master;
+GO
+
+IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = N'BD_Joyeria_Practica')
+BEGIN
+    CREATE DATABASE BD_Joyeria_Practica;
+END
+GO
+
 USE BD_Joyeria_Practica;
 GO
 
 /* =========================================================
-   TABLA: Rol
-   Almacena los roles disponibles para los usuarios.
+   1. MÓDULO DE USUARIOS Y ROLES
    ========================================================= */
 
+-- 1.1 Rol
 CREATE TABLE Rol (
     IdRol INT IDENTITY(1,1) NOT NULL,
     NombreRol VARCHAR(50) NOT NULL,
@@ -21,13 +34,7 @@ CREATE TABLE Rol (
 );
 GO
 
-
-/* =========================================================
-   TABLA: Usuario
-   Almacena los clientes y el personal registrado.
-   Cada usuario posee un único rol.
-   ========================================================= */
-
+-- 1.2 Usuario
 CREATE TABLE Usuario (
     IdUsuario INT IDENTITY(1,1) NOT NULL,
     Nombre VARCHAR(60) NOT NULL,
@@ -66,45 +73,37 @@ CREATE TABLE Usuario (
 GO
 
 /* =========================================================
-   ARCHIVO: 02_productos_categorias_generos.sql
+   2. MÓDULO DE CATÁLOGO E INVENTARIO
    ========================================================= */
--- 1. aseguramos de estar en master para poder crear bases de datos
-USE master;
 
-CREATE DATABASE BD_Joyeria_Practica;
-GO
--- 2. Si la base no existe, se crea automáticamente
-IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = N'BD_Joyeria_Practica')
-BEGIN
-    CREATE DATABASE BD_Joyeria_Practica;
-END
-GO
-
--- 3. Para posicionarse en la base del proyecto
-USE BD_Joyeria_Practica;
-GO
-
+-- 2.1 Genero
 CREATE TABLE Genero (
     idGenero INT IDENTITY(1,1),
     NombreGenero VARCHAR(30) NOT NULL,
     CONSTRAINT pk_genero PRIMARY KEY (idGenero),
     CONSTRAINT uq_genero_nombre UNIQUE (NombreGenero)
 );
+GO
+
+-- 2.2 Categoria
 CREATE TABLE Categoria (
     idCategoria INT IDENTITY(1,1),
     NombreCategoria VARCHAR(50) NOT NULL,
     CONSTRAINT pk_categoria PRIMARY KEY (idCategoria),
     CONSTRAINT uq_categoria_nombre UNIQUE (NombreCategoria)
 );
+GO
+
+-- 2.3 Producto
 CREATE TABLE Producto (
     CodigoProducto INT IDENTITY(1,1),
     Nombre VARCHAR(100) NOT NULL,
-    PrecioVenta INT NOT NULL,
-    PrecioCompra INT NOT NULL,
+    PrecioVenta DECIMAL(10,2) NOT NULL,
+    PrecioCompra DECIMAL(10,2) NOT NULL,
     StockActual INT DEFAULT 0,
     StockMinimo INT DEFAULT 1,
-    Descripcion VARCHAR(255),
-    Estado VARCHAR(10) DEFAULT 'ACTIVO',
+    Descripcion VARCHAR(255) NULL,
+    Estado VARCHAR(20) DEFAULT 'Disponible',
     idGenero INT NOT NULL,
     idCategoria INT NOT NULL,
     CONSTRAINT pk_producto PRIMARY KEY (CodigoProducto),
@@ -112,7 +111,7 @@ CREATE TABLE Producto (
     CONSTRAINT ck_producto_preciocompra CHECK (PrecioCompra >= 0),
     CONSTRAINT ck_producto_stockactual CHECK (StockActual >= 0),
     CONSTRAINT ck_producto_stockminimo CHECK (StockMinimo >= 0),
-    CONSTRAINT ck_producto_estado CHECK (Estado IN ('ACTIVO', 'INACTIVO')),
+    CONSTRAINT ck_producto_estado CHECK (Estado IN ('Disponible', 'Agotado', 'Discontinuado', 'ACTIVO', 'INACTIVO')),
 
     CONSTRAINT fk_producto_genero FOREIGN KEY (idGenero) 
         REFERENCES Genero(idGenero),
@@ -121,70 +120,80 @@ CREATE TABLE Producto (
 );
 GO
 
+-- 2.4 Ajuste de Stock
+CREATE TABLE AjusteStock (
+    idAjuste INT IDENTITY(1,1),
+    FechaAjuste DATETIME NOT NULL DEFAULT GETDATE(),
+    TipoAjuste VARCHAR(30) NOT NULL,
+    CantidadAjuste INT NOT NULL,
+    Observacion VARCHAR(250) NULL,
+    idUsuario INT NOT NULL,
+    CodigoProducto INT NOT NULL,
+    CONSTRAINT pk_ajustestock PRIMARY KEY (idAjuste),
+    CONSTRAINT ck_ajustestock_cantidad CHECK (CantidadAjuste <> 0),
+    CONSTRAINT fk_ajustestock_usuario FOREIGN KEY (idUsuario) 
+        REFERENCES Usuario(IdUsuario) 
+        ON UPDATE NO ACTION 
+        ON DELETE NO ACTION,
+    CONSTRAINT fk_ajustestock_producto FOREIGN KEY (CodigoProducto) 
+        REFERENCES Producto(CodigoProducto) 
+        ON UPDATE NO ACTION 
+        ON DELETE NO ACTION
+);
+GO
+
 /* =========================================================
-   ARCHIVO: 03_proveedor_mediopago_estadocompra.sql
+   3. MÓDULO DE COMPRAS Y RECEPCIÓN
    ========================================================= */
-USE master;
-GO
 
--- 1. Crear una base de datos 100% nueva y aislada
-IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = N'BD_Joyeria_Practica')
-BEGIN
-    CREATE DATABASE BD_Joyeria_Practica;
-END
-GO
-
--- 2. Posicionarnos en la base nueva
-USE BD_Joyeria_Practica;
-GO
-
+-- 3.1 Medio de Pago
 CREATE TABLE MedioPago (
-IdMedioPago INT IDENTITY (1,1),
-NombreMedioPago VARCHAR(50) NOT NULL, 
-CONSTRAINT PK_IdMedioPago PRIMARY KEY (IdMedioPago)
+    IdMedioPago INT IDENTITY(1,1),
+    NombreMedioPago VARCHAR(50) NOT NULL, 
+    CONSTRAINT PK_IdMedioPago PRIMARY KEY (IdMedioPago),
+    CONSTRAINT UQ_NombreMedioPago UNIQUE (NombreMedioPago)
 );
 GO
 
+-- 3.2 Estado de Compra
 CREATE TABLE EstadoCompra (
-IdEstadoCompra INT IDENTITY (1,1), 
-NombreEstadoCompra VARCHAR(50) NOT NULL,
-CONSTRAINT PK_IdEstadoCompra PRIMARY KEY (IdEstadoCompra)
+    IdEstadoCompra INT IDENTITY(1,1), 
+    NombreEstadoCompra VARCHAR(50) NOT NULL,
+    CONSTRAINT PK_IdEstadoCompra PRIMARY KEY (IdEstadoCompra),
+    CONSTRAINT UQ_NombreEstadoCompra UNIQUE (NombreEstadoCompra)
 );
 GO
 
+-- 3.3 Proveedor
 CREATE TABLE Proveedor (
-IdProveedor INT IDENTITY (1,1),
-RazonSocial VARCHAR (125) NOT NULL,
-CUIT VARCHAR(11) NOT NULL,
-Telefono VARCHAR(25) NOT NULL,
-CorreoElectronico VARCHAR(255), 
-CONSTRAINT PK_IdProveedor PRIMARY KEY (IdProveedor),
-CONSTRAINT UQ_CUIT UNIQUE (CUIT),
-CONSTRAINT CK_Telefono CHECK (Telefono NOT LIKE '%[^0-9]%')
+    IdProveedor INT IDENTITY(1,1),
+    RazonSocial VARCHAR(125) NOT NULL,
+    CUIT VARCHAR(11) NOT NULL,
+    Telefono VARCHAR(25) NOT NULL,
+    CorreoElectronico VARCHAR(255) NULL, 
+    CONSTRAINT PK_IdProveedor PRIMARY KEY (IdProveedor),
+    CONSTRAINT UQ_CUIT UNIQUE (CUIT),
+    CONSTRAINT CK_Telefono CHECK (Telefono NOT LIKE '%[^0-9]%')
 );
 GO
 
-/* =========================================================
-   ARCHIVO: 04_compra_detalleCompra.sql
-   ========================================================= */
-USE BD_Joyeria_Practica;
-GO
-
+-- 3.4 Compra (Cabecera)
 CREATE TABLE Compra (
     IdCompra INT IDENTITY(1,1),
-    FechaCompra DATETIME NOT NULL,
+    FechaCompra DATETIME NOT NULL DEFAULT GETDATE(),
     IdUsuario INT NOT NULL,
     IdProveedor INT NOT NULL,
     IdEstadoCompra INT NOT NULL,
     IdMedioPago INT NOT NULL,
     CONSTRAINT PK_Compra PRIMARY KEY (IdCompra),
-  --  CONSTRAINT FK_Compra_Usuario FOREIGN KEY (IdUsuario) REFERENCES Usuario(IdUsuario),
-  --  CONSTRAINT FK_Compra_Proveedor FOREIGN KEY (IdProveedor) REFERENCES Proveedor(IdProveedor),
-  --  CONSTRAINT FK_Compra_EstadoCompra FOREIGN KEY (IdEstadoCompra) REFERENCES EstadoCompra(IdEstadoCompra),
-  --  CONSTRAINT FK_Compra_MedioPago FOREIGN KEY (IdMedioPago) REFERENCES MedioPago(IdMedioPago)
+    CONSTRAINT FK_Compra_Usuario FOREIGN KEY (IdUsuario) REFERENCES Usuario(IdUsuario),
+    CONSTRAINT FK_Compra_Proveedor FOREIGN KEY (IdProveedor) REFERENCES Proveedor(IdProveedor),
+    CONSTRAINT FK_Compra_EstadoCompra FOREIGN KEY (IdEstadoCompra) REFERENCES EstadoCompra(IdEstadoCompra),
+    CONSTRAINT FK_Compra_MedioPago FOREIGN KEY (IdMedioPago) REFERENCES MedioPago(IdMedioPago)
 );
 GO
 
+-- 3.5 Detalle de Compra (Renglones)
 CREATE TABLE DetalleCompra (
     IdDetalleCompra INT IDENTITY(1,1),
     IdCompra INT NOT NULL,
@@ -192,16 +201,55 @@ CREATE TABLE DetalleCompra (
     PrecioUnitario DECIMAL(12,2) NOT NULL,
     IdProducto INT NOT NULL,
     CONSTRAINT PK_DetalleCompra PRIMARY KEY (IdDetalleCompra),
+    CONSTRAINT CK_DetalleCompra_Cantidad CHECK (Cantidad > 0),
+    CONSTRAINT CK_DetalleCompra_Precio CHECK (PrecioUnitario >= 0),
     CONSTRAINT FK_DetalleCompra_Compra FOREIGN KEY (IdCompra) REFERENCES Compra(IdCompra),
-  --  CONSTRAINT FK_DetalleCompra_Producto FOREIGN KEY (CodigoProducto) REFERENCES Producto(CodigoProducto)
+    CONSTRAINT FK_DetalleCompra_Producto FOREIGN KEY (IdProducto) REFERENCES Producto(CodigoProducto)
+);
+GO
+
+-- 3.6 Recepción (Cabecera de Ingreso a Depósito)
+CREATE TABLE Recepcion (
+    idRecepcion INT IDENTITY(1,1),
+    FechaRecepcion DATETIME NOT NULL DEFAULT GETDATE(),
+    idCompra INT NOT NULL,
+    idUsuario INT NOT NULL,
+    CONSTRAINT pk_recepcion PRIMARY KEY (idRecepcion),
+    CONSTRAINT fk_recepcion_compra FOREIGN KEY (idCompra) 
+        REFERENCES Compra(IdCompra) 
+        ON UPDATE NO ACTION 
+        ON DELETE NO ACTION,
+    CONSTRAINT fk_recepcion_usuario FOREIGN KEY (idUsuario) 
+        REFERENCES Usuario(IdUsuario) 
+        ON UPDATE NO ACTION 
+        ON DELETE NO ACTION
+);
+GO
+
+-- 3.7 Detalle de Recepción (Cantidades Físicas Ingresadas)
+CREATE TABLE DetalleRecepcion (
+    idDetalleRecepcion INT IDENTITY(1,1),
+    CantidadRecibida INT NOT NULL,
+    idRecepcion INT NOT NULL,
+    idDetalleCompra INT NOT NULL,
+    CONSTRAINT pk_detallerecepcion PRIMARY KEY (idDetalleRecepcion),
+    CONSTRAINT ck_detallerecepcion_cantidad CHECK (CantidadRecibida >= 0),
+    CONSTRAINT fk_detallerecepcion_recepcion FOREIGN KEY (idRecepcion) 
+        REFERENCES Recepcion(idRecepcion) 
+        ON UPDATE NO ACTION 
+        ON DELETE NO ACTION,
+    CONSTRAINT fk_detallerecepcion_detallecompra FOREIGN KEY (idDetalleCompra) 
+        REFERENCES DetalleCompra(IdDetalleCompra) 
+        ON UPDATE NO ACTION 
+        ON DELETE NO ACTION
 );
 GO
 
 /* =========================================================
-   TABLAS ADICIONALES (DE Tablas.sql)
+   4. MÓDULO DE VENTAS Y FACTURACIÓN
    ========================================================= */
 
--- 1.7 Condición frente al IVA
+-- 4.1 Condición frente al IVA
 CREATE TABLE CondicionIVA (
     idCondicionIVA INT IDENTITY(1,1),
     CondicionIVA VARCHAR(50) NOT NULL,
@@ -210,7 +258,7 @@ CREATE TABLE CondicionIVA (
 );
 GO
 
--- 1.8 Tipo de Comprobante
+-- 4.2 Tipo de Comprobante
 CREATE TABLE TipoComprobante (
     idTipoComprobante INT IDENTITY(1,1),
     TipoComprobante VARCHAR(50) NOT NULL,
@@ -219,7 +267,7 @@ CREATE TABLE TipoComprobante (
 );
 GO
 
--- 2.2 Cliente
+-- 4.3 Cliente
 CREATE TABLE Cliente (
     idCliente INT IDENTITY(1,1),
     Nombre VARCHAR(50) NOT NULL,
@@ -238,66 +286,7 @@ CREATE TABLE Cliente (
 );
 GO
 
--- 2.4 Ajuste de Stock
-CREATE TABLE AjusteStock (
-    idAjuste INT IDENTITY(1,1),
-    FechaAjuste DATETIME NOT NULL DEFAULT GETDATE(),
-    TipoAjuste VARCHAR(30) NOT NULL,
-    CantidadAjuste INT NOT NULL,
-    Observacion VARCHAR(250) NULL,
-    idUsuario INT NOT NULL,
-    CodigoProducto INT NOT NULL,
-    CONSTRAINT pk_ajustestock PRIMARY KEY (idAjuste),
-    CONSTRAINT ck_ajustestock_cantidad CHECK (CantidadAjuste <> 0),
-    CONSTRAINT fk_ajustestock_usuario FOREIGN KEY (idUsuario) 
-        REFERENCES Usuario(idUsuario) 
-        ON UPDATE NO ACTION 
-        ON DELETE NO ACTION,
-    CONSTRAINT fk_ajustestock_producto FOREIGN KEY (CodigoProducto) 
-        REFERENCES Producto(CodigoProducto) 
-        ON UPDATE NO ACTION 
-        ON DELETE NO ACTION
-);
-GO
-
--- 3.3 Cabecera de Recepción
-CREATE TABLE Recepcion (
-    idRecepcion INT IDENTITY(1,1),
-    FechaRecepcion DATETIME NOT NULL DEFAULT GETDATE(),
-    idCompra INT NOT NULL,
-    idUsuario INT NOT NULL,
-    CONSTRAINT pk_recepcion PRIMARY KEY (idRecepcion),
-    CONSTRAINT fk_recepcion_compra FOREIGN KEY (idCompra) 
-        REFERENCES Compra(idCompra) 
-        ON UPDATE NO ACTION 
-        ON DELETE NO ACTION,
-    CONSTRAINT fk_recepcion_usuario FOREIGN KEY (idUsuario) 
-        REFERENCES Usuario(idUsuario) 
-        ON UPDATE NO ACTION 
-        ON DELETE NO ACTION
-);
-GO
-
--- 3.4 Detalle de Recepción
-CREATE TABLE DetalleRecepcion (
-    idDetalleRecepcion INT IDENTITY(1,1),
-    CantidadRecibida INT NOT NULL,
-    idRecepcion INT NOT NULL,
-    idDetalleCompra INT NOT NULL,
-    CONSTRAINT pk_detallerecepcion PRIMARY KEY (idDetalleRecepcion),
-    CONSTRAINT ck_detallerecepcion_cantidad CHECK (CantidadRecibida >= 0),
-    CONSTRAINT fk_detallerecepcion_recepcion FOREIGN KEY (idRecepcion) 
-        REFERENCES Recepcion(idRecepcion) 
-        ON UPDATE NO ACTION 
-        ON DELETE NO ACTION,
-    CONSTRAINT fk_detallerecepcion_detallecompra FOREIGN KEY (idDetalleCompra) 
-        REFERENCES DetalleCompra(idDetalleCompra) 
-        ON UPDATE NO ACTION 
-        ON DELETE NO ACTION
-);
-GO
-
--- 4.1 Cabecera de Comprobante (Venta)
+-- 4.4 Comprobante (Cabecera de Venta)
 CREATE TABLE Comprobante (
     idComprobante INT IDENTITY(1,1),
     FechaComprobante DATETIME NOT NULL DEFAULT GETDATE(),
@@ -307,7 +296,7 @@ CREATE TABLE Comprobante (
     idUsuario INT NOT NULL,
     CONSTRAINT pk_comprobante PRIMARY KEY (idComprobante),
     CONSTRAINT fk_comprobante_mediopago FOREIGN KEY (idMedioPago) 
-        REFERENCES MedioPago(idMedioPago) 
+        REFERENCES MedioPago(IdMedioPago) 
         ON UPDATE NO ACTION 
         ON DELETE NO ACTION,
     CONSTRAINT fk_comprobante_tipocomprobante FOREIGN KEY (idTipoComprobante) 
@@ -319,13 +308,13 @@ CREATE TABLE Comprobante (
         ON UPDATE NO ACTION 
         ON DELETE NO ACTION,
     CONSTRAINT fk_comprobante_usuario FOREIGN KEY (idUsuario) 
-        REFERENCES Usuario(idUsuario) 
+        REFERENCES Usuario(IdUsuario) 
         ON UPDATE NO ACTION 
         ON DELETE NO ACTION
 );
 GO
 
--- 4.2 Detalle de Comprobante (Renglones de Venta)
+-- 4.5 Detalle de Comprobante (Renglones de Venta)
 CREATE TABLE DetalleComprobante (
     idDetalleComprobante INT IDENTITY(1,1),
     idComprobante INT NOT NULL,
